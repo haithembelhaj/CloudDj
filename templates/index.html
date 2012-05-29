@@ -1,0 +1,51 @@
+<html>
+<head>
+	<title>CloudDJ</title>
+	<link rel="stylesheet" href="static/style.css">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="decks">
+	<div id="deck-a" class="deck">
+		<input type="range" class="tempo" min="0" max="100" value="50"></input>
+		<img class="cover">
+		<div class="player"></div>
+		<div class="filters">
+			<button class="1">1</button>
+			<button class="2">2</button>
+			<button class="3">3</button>
+			<input type="range" class="effect" min="0" max="100" value="0"></input>
+		</div>
+	</div>
+	<div id="deck-b" class="deck">
+		<div class="filters">
+			<button class="1">1</button>
+			<button class="2">2</button>
+			<button class="3">3</button>
+			<input type="range" class="effect" min="0" max="100" value="0"></input>
+		</div>
+		<img class="cover">
+		<div class="player"></div>
+		<input type="range" class="tempo" min="0" max="100" value="50"></input>
+	</div>
+<input type="range" id="crossfader" min="0" max="100" value="50" onchange="crossfade(this);"></input>
+</div>
+
+<div id="playlist-container">
+	<ul id="playlist"></ul>
+	<input type="text" id="url" name="url" value="" placeholder="Paste a soundcloud Url"><div id="add">+</div>
+</div>
+<!-- Templates -->
+<script type="text/x-jquery-tmpl" id="itemTemplate">
+	<img class="playlist-thumb" src="${src}"/>
+	<div class="title">${title}</div>
+	<button class="load-a">load in A</button>
+	<button class="load-b">load in B</button>
+</script>
+
+<!-- Application scripts-->
+<script src="static/spine.js"></script>
+<script src="{{ url_for('static', filename='core.js') }}"></script>
+</body>
+</html>

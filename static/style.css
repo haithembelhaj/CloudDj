@@ -1,0 +1,161 @@
+#decks{
+	width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+	height: 200px;
+	border: solid 1px #EEE;
+	border-radius: 20px;
+	padding: 20px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+#decks .deck{
+	width: 550px;
+	height: 200px;
+	position: relative;
+}
+
+#decks .player{
+	height: 150px;
+	width: 400px;
+	position: absolute;
+	top: 0;
+	background-size: 100% 100%;
+}
+
+#decks .cover{
+	width: 150px;
+	height: 150px;
+	position: absolute;
+}
+
+#decks #deck-a {
+	float: left;
+}
+
+#decks #deck-a .cover{
+	left: 20px;
+}
+
+#decks #deck-a .player{
+	left: 170px;
+}
+
+#decks #deck-b .cover{
+	left: 0px;
+}
+
+#decks #deck-b .player{
+	right: 15px;
+}
+
+#decks #deck-b{
+	float: right;
+}
+
+#decks .controls{
+	height: 50px;
+	width: 250px;
+	bottom: 0px;
+	position: absolute;
+}
+
+#decks #deck-a .controls{
+	left: 15px;
+}
+
+#decks #deck-b .controls{
+	right: 15px;
+}
+
+#decks .tempo{
+	width: 10px;
+	height: 150px;
+	-webkit-appearance: slider-vertical;
+	position: absolute;
+}
+
+#decks .tempo:first-child{
+	left: 0px;
+}
+
+#decks .tempo:last-child{
+	right: 0px;
+}
+
+#decks .filters{
+	position: absolute;
+	left: 100px;
+	bottom: 10px;
+}
+
+#decks .filters .effect{
+	width: 80px;
+}
+
+#crossfader{
+	position: absolute;
+	bottom: 20px;
+	left: 500px;
+	width: 200px;
+}
+
+#playlist-container{
+	margin-left: auto;
+	margin-right: auto;
+	width: 700px;
+	border: solid 1px #EEE;
+	padding: 20px;
+	border-radius: 20px;
+}
+
+#playlist-container #url{
+	width: 400px;	
+}
+
+#playlist-container #add{
+	display: inline-block;
+	margin-left: 15px;
+	font-size: 26px;
+	font-weight: 600;
+}
+
+#playlist{
+	list-style: none;
+	margin: 50px 0px;
+	padding: 0px;
+}
+
+#playlist li{
+	height: 70px;
+	position: relative;
+}
+
+#playlist li img{
+	width: 50px;
+	height: 50px;
+}
+
+#playlist li .title{
+	line-height: 50px;
+	position: absolute;
+	left: 60px;
+	top: 0px;
+}
+
+#playlist li .load-a{
+	position: absolute;
+	left: 50px;
+	top: 50px;
+}
+
+#playlist li .load-b{
+	position: absolute;
+	left: 125px;
+	top: 50px;
+}
+
+
+
