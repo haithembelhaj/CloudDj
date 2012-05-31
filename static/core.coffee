@@ -67,13 +67,13 @@ class Deck extends Spine.Controller
 			getBuffer '/stream?url='+escape(url), (buffer)=>
 				@track.buffer = buffer
 				@path = @track.buffer.duration/550
-				@wavePath =  @track.buffer.duration/2000
+				@wavePath =  @track.buffer.duration/3000
 				@track.save()
 				@el.removeClass 'buffering'
 		else
 			@el.removeClass 'buffering'
 			@path = @track.buffer.duration/550
-			@wavePath =  @track.buffer.duration/2000
+			@wavePath =  @track.buffer.duration/3000
 
 	unloadTrack: ()=>
 		@pause() if @playing
@@ -141,7 +141,7 @@ class Deck extends Spine.Controller
 			@waveform.css "background-position-x", val
 
 		val = parseInt(@waveform.css("background-position-x").slice(0,-2))-1
-		if  val >= -1776
+		if  val >= -2776
 			@waveform.css "background-position-x", "#{val}px"
 		else
 			clearInterval @waver

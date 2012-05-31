@@ -52,7 +52,7 @@ h2{
 	width: 450px;
 	position: absolute;
 	top: 0;
-	background-size: 2000px 99px;
+	background-size: 3000px 99px;
 	background-position: 225px 0px;
 	background-repeat: no-repeat;
 	background-color: #eee;
@@ -75,7 +75,7 @@ h2{
 #decks .player .playhead{
 	height: 100%;
 	width: 0px;
-	background: -webkit-gradient(linear, left top, right top, color-stop(0%,#4784ff), color-stop(99%,#90d6f9));
+	background-color: #90d6f9;
 	opacity: 0.3;
 }
 
@@ -344,7 +344,3 @@ h2{
 	background-color: #eee;
 	-webkit-transition: background 0.3s linear;
 }
-
-
-
-

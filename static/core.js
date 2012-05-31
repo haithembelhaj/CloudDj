@@ -108,14 +108,14 @@ Deck = (function(_super) {
       return getBuffer('/stream?url=' + escape(url), function(buffer) {
         _this.track.buffer = buffer;
         _this.path = _this.track.buffer.duration / 550;
-        _this.wavePath = _this.track.buffer.duration / 2000;
+        _this.wavePath = _this.track.buffer.duration / 3000;
         _this.track.save();
         return _this.el.removeClass('buffering');
       });
     } else {
       this.el.removeClass('buffering');
       this.path = this.track.buffer.duration / 550;
-      return this.wavePath = this.track.buffer.duration / 2000;
+      return this.wavePath = this.track.buffer.duration / 3000;
     }
   };
 
@@ -204,7 +204,7 @@ Deck = (function(_super) {
       this.waveform.css("background-position-x", val);
     }
     val = parseInt(this.waveform.css("background-position-x").slice(0, -2)) - 1;
-    if (val >= -1776) {
+    if (val >= -2776) {
       return this.waveform.css("background-position-x", "" + val + "px");
     } else {
       return clearInterval(this.waver);
