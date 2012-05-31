@@ -4,7 +4,7 @@ context = new webkitAudioContext()
 
 filters = [
 	"static/impulse-responses/matrix-reverb3.wav"
-	"static/impulse-responses/wildecho.wav"
+	"static/impulse-responses/echo.wav"
 	"static/impulse-responses/cosmic-ping-long.wav"
 ]
 
