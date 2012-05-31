@@ -71,6 +71,7 @@ class Deck extends Spine.Controller
 		else
 			@player.css  'background-color' : '#5C5CD6'
 			@path = @track.buffer.duration/400
+			@wavePath =  @track.buffer.duration/2000
 
 	togglePlay: ()->
 		if @playing then @pause() else @play()

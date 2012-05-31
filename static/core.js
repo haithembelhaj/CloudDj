@@ -113,7 +113,8 @@ Deck = (function(_super) {
       this.player.css({
         'background-color': '#5C5CD6'
       });
-      return this.path = this.track.buffer.duration / 400;
+      this.path = this.track.buffer.duration / 400;
+      return this.wavePath = this.track.buffer.duration / 2000;
     }
   };
 
