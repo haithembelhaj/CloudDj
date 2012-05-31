@@ -157,7 +157,7 @@
 
 #playlist{
 	list-style: none;
-	margin: 50px 0px;
+	margin: 40px 0px;
 	padding: 0px;
 }
 
@@ -188,6 +188,51 @@
 	position: absolute;
 	left: 125px;
 	top: 50px;
+}
+
+#search-container{
+	margin-left: auto;
+	margin-right: auto;
+	width: 700px;
+	border: solid 1px #EEE;
+	padding: 10px 20px;
+	border-radius: 20px;
+	text-align: center;
+}
+
+#search-container #search{
+	width: 300px;
+	font-size: 20px;
+}
+
+#searchlist{
+	list-style: none;
+	margin: 40px 0px;
+	padding: 0px;
+}
+
+#searchlist li{
+	height: 70px;
+	position: relative;
+}
+
+#searchlist li img{
+	width: 50px;
+	height: 50px;
+	position: absolute;
+	left: 0px;
+}
+
+#searchlist li .title{
+	line-height: 50px;
+	position: absolute;
+	left: 60px;
+	top: 0px;
+}
+
+#searchlist li .add-list{
+	position: absolute;
+	right: 50px;
 }
 
 

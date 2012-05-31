@@ -1,4 +1,5 @@
 APPID = '829b2b95de282fa7cf7297e7ab2960ed'
+SC.initialize client_id: APPID
 context = new webkitAudioContext()
 
 filters = [
@@ -207,7 +208,7 @@ class Item extends Spine.Controller
 	render: ->
 		title = "#{@item.sc.user.username} - #{@item.sc.title}"
 		src = @item.sc.artwork_url
-		@el.html $('#itemTemplate').tmpl(src: src, title: title)
+		@el.html $('#listItemTemplate').tmpl(src: src, title: title)
 		@
 
 	loadA: ->
@@ -216,8 +217,53 @@ class Item extends Spine.Controller
 	loadB: ->
 		deckB.loadTrack(@item)
 
+class searchList extends Spine.Controller
 
+	el: $('#search-container')
+
+	events: 
+		'keydown #search' : 'render'
+
+	elements:
+		'#searchlist' : 'searchlist'
+		'#search' : 'query'
+
+	constructor : ->
+		super
+
+	render: ()->
+		@searchlist.empty()
+		SC.get '/tracks', q: @query.val(), (result)=>
+			for track in result[0..10]
+				@renderOne track
+
+	renderOne: (track)->
+		item = new searchItem(item : track)
+		@searchlist.append(item.render().el)
+
+class searchItem extends Spine.Controller
+
+	tag: 'li'
+
+	events:
+		'click .add-list' : 'addToList'
+
+	render: ->
+		title = "#{@item.user.username} - #{@item.title}"
+		src = @item.artwork_url
+		@el.html $('#searchItemTemplate').tmpl(src: src, title: title)
+		@
+
+	addToList: ->
+		track = Track.create(sc : @item)
+		track.save()
+		#playlist.renderOne(sc : @item)
+
+
+searchlist = new searchList
 playlist = new Playlist
+
+
 
 crossfade = (element)->
 	x = parseInt(element.value) / parseInt(element.max)

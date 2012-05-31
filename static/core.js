@@ -1,9 +1,13 @@
-var APPID, Deck, Item, Playlist, Track, context, crossfade, deckA, deckB, filterBuffers, filters, getBuffer, playlist,
+var APPID, Deck, Item, Playlist, Track, context, crossfade, deckA, deckB, filterBuffers, filters, getBuffer, playlist, searchItem, searchList, searchlist,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 APPID = '829b2b95de282fa7cf7297e7ab2960ed';
+
+SC.initialize({
+  client_id: APPID
+});
 
 context = new webkitAudioContext();
 
@@ -309,7 +313,7 @@ Item = (function(_super) {
     var src, title;
     title = "" + this.item.sc.user.username + " - " + this.item.sc.title;
     src = this.item.sc.artwork_url;
-    this.el.html($('#itemTemplate').tmpl({
+    this.el.html($('#listItemTemplate').tmpl({
       src: src,
       title: title
     }));
@@ -327,6 +331,93 @@ Item = (function(_super) {
   return Item;
 
 })(Spine.Controller);
+
+searchList = (function(_super) {
+
+  __extends(searchList, _super);
+
+  searchList.prototype.el = $('#search-container');
+
+  searchList.prototype.events = {
+    'keydown #search': 'render'
+  };
+
+  searchList.prototype.elements = {
+    '#searchlist': 'searchlist',
+    '#search': 'query'
+  };
+
+  function searchList() {
+    searchList.__super__.constructor.apply(this, arguments);
+  }
+
+  searchList.prototype.render = function() {
+    var _this = this;
+    this.searchlist.empty();
+    return SC.get('/tracks', {
+      q: this.query.val()
+    }, function(result) {
+      var track, _i, _len, _ref, _results;
+      _ref = result.slice(0, 11);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        track = _ref[_i];
+        _results.push(_this.renderOne(track));
+      }
+      return _results;
+    });
+  };
+
+  searchList.prototype.renderOne = function(track) {
+    var item;
+    item = new searchItem({
+      item: track
+    });
+    return this.searchlist.append(item.render().el);
+  };
+
+  return searchList;
+
+})(Spine.Controller);
+
+searchItem = (function(_super) {
+
+  __extends(searchItem, _super);
+
+  function searchItem() {
+    searchItem.__super__.constructor.apply(this, arguments);
+  }
+
+  searchItem.prototype.tag = 'li';
+
+  searchItem.prototype.events = {
+    'click .add-list': 'addToList'
+  };
+
+  searchItem.prototype.render = function() {
+    var src, title;
+    title = "" + this.item.user.username + " - " + this.item.title;
+    src = this.item.artwork_url;
+    this.el.html($('#searchItemTemplate').tmpl({
+      src: src,
+      title: title
+    }));
+    return this;
+  };
+
+  searchItem.prototype.addToList = function() {
+    var track;
+    track = Track.create({
+      sc: this.item
+    });
+    return track.save();
+  };
+
+  return searchItem;
+
+})(Spine.Controller);
+
+searchlist = new searchList;
 
 playlist = new Playlist;
 
