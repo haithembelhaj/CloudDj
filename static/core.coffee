@@ -31,7 +31,7 @@ class Deck extends Spine.Controller
 
 	events:
 		'click .cover' : 'togglePlay'
-		'change .tempo' : 'changeTempo'
+		'change .tempo' : 'updateTempo'
 		'click .filters button' : 'toggleFilter'
 		'change .effect' : 'effectVolume'
 		'click .player' : 'jumpTo'
@@ -91,8 +91,7 @@ class Deck extends Spine.Controller
 
 		@track.save()
 		@playing = true
-		@changeTempo()
-		@updater = setInterval @updateCursor, (@path*1000)/@source.playbackRate
+		@updateTempo()
 
 
 	pause: ->
@@ -118,9 +117,11 @@ class Deck extends Spine.Controller
 
 		@cursor.css 'width', '+=1'
 
-	changeTempo: ->
+	updateTempo: ->
 		val = ((@tempo.val()-50)/200) + 1
 		@source.playbackRate.value = val
+		if @updater then clearInterval @updater
+		@updater = setInterval @updateCursor, (@path*1000)/val
 
 	toggleFilter: (e)->
 		filter = parseInt($(e.target).text())

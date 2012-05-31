@@ -56,7 +56,7 @@ Deck = (function(_super) {
 
   Deck.prototype.events = {
     'click .cover': 'togglePlay',
-    'change .tempo': 'changeTempo',
+    'change .tempo': 'updateTempo',
     'click .filters button': 'toggleFilter',
     'change .effect': 'effectVolume',
     'click .player': 'jumpTo'
@@ -138,8 +138,7 @@ Deck = (function(_super) {
     }
     this.track.save();
     this.playing = true;
-    this.changeTempo();
-    return this.updater = setInterval(this.updateCursor, (this.path * 1000) / this.source.playbackRate);
+    return this.updateTempo();
   };
 
   Deck.prototype.pause = function() {
@@ -165,10 +164,12 @@ Deck = (function(_super) {
     return this.cursor.css('width', '+=1');
   };
 
-  Deck.prototype.changeTempo = function() {
+  Deck.prototype.updateTempo = function() {
     var val;
     val = ((this.tempo.val() - 50) / 200) + 1;
-    return this.source.playbackRate.value = val;
+    this.source.playbackRate.value = val;
+    if (this.updater) clearInterval(this.updater);
+    return this.updater = setInterval(this.updateCursor, (this.path * 1000) / val);
   };
 
   Deck.prototype.toggleFilter = function(e) {
