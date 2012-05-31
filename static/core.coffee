@@ -53,6 +53,7 @@ class Deck extends Spine.Controller
 		@convolverGain = context.createGainNode()
 		@convolverGain.gain.value = 0
 		@playing = false
+		Track.bind 'destroy', @unloadTrack
 
 	loadTrack: (track)=>
 		@track = track
@@ -75,11 +76,20 @@ class Deck extends Spine.Controller
 			@path = @track.buffer.duration/550
 			@wavePath =  @track.buffer.duration/2000
 
+	unloadTrack: ()=>
+		@pause() if @playing
+		@track = ''
+		@player.css  'background-color' : 'white'
+		@player.css 'background-image' : "none"
+		@waveform.css 'background-image' : "none"
+		@cover.attr 'src', ''
+		@cursor.width 0
+
 	togglePlay: ()->
 		if @playing then @pause() else @play()
 
 	play: (startAt= @track.pausedAt) ->
-		if @track.buffer
+		if @track?.buffer
 			@source = context.createBufferSource()
 			@source.buffer = @track.buffer
 			#@gainNode = context.createGainNode()
@@ -201,6 +211,7 @@ class Item extends Spine.Controller
 	events:
 		'click .load-a' : 'loadA'
 		'click .load-b' : 'loadB'
+		'click .delete' : 'delete'
 
 	constructor : ->
 		super
@@ -216,6 +227,10 @@ class Item extends Spine.Controller
 
 	loadB: ->
 		deckB.loadTrack(@item)
+
+	delete: ->
+		@item.destroy()
+		@release()
 
 class searchList extends Spine.Controller
 

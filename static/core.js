@@ -80,12 +80,14 @@ Deck = (function(_super) {
   function Deck() {
     this.updateWave = __bind(this.updateWave, this);
     this.updateCursor = __bind(this.updateCursor, this);
+    this.unloadTrack = __bind(this.unloadTrack, this);
     this.loadTrack = __bind(this.loadTrack, this);    Deck.__super__.constructor.apply(this, arguments);
     this.gainNode = context.createGainNode();
     this.convolver = context.createConvolver();
     this.convolverGain = context.createGainNode();
     this.convolverGain.gain.value = 0;
     this.playing = false;
+    Track.bind('destroy', this.unloadTrack);
   }
 
   Deck.prototype.loadTrack = function(track) {
@@ -124,6 +126,22 @@ Deck = (function(_super) {
     }
   };
 
+  Deck.prototype.unloadTrack = function() {
+    if (this.playing) this.pause();
+    this.track = '';
+    this.player.css({
+      'background-color': 'white'
+    });
+    this.player.css({
+      'background-image': "none"
+    });
+    this.waveform.css({
+      'background-image': "none"
+    });
+    this.cover.attr('src', '');
+    return this.cursor.width(0);
+  };
+
   Deck.prototype.togglePlay = function() {
     if (this.playing) {
       return this.pause();
@@ -133,8 +151,9 @@ Deck = (function(_super) {
   };
 
   Deck.prototype.play = function(startAt) {
+    var _ref;
     if (startAt == null) startAt = this.track.pausedAt;
-    if (this.track.buffer) {
+    if ((_ref = this.track) != null ? _ref.buffer : void 0) {
       this.source = context.createBufferSource();
       this.source.buffer = this.track.buffer;
       this.source.connect(this.gainNode);
@@ -302,7 +321,8 @@ Item = (function(_super) {
 
   Item.prototype.events = {
     'click .load-a': 'loadA',
-    'click .load-b': 'loadB'
+    'click .load-b': 'loadB',
+    'click .delete': 'delete'
   };
 
   function Item() {
@@ -326,6 +346,11 @@ Item = (function(_super) {
 
   Item.prototype.loadB = function() {
     return deckB.loadTrack(this.item);
+  };
+
+  Item.prototype["delete"] = function() {
+    this.item.destroy();
+    return this.release();
   };
 
   return Item;

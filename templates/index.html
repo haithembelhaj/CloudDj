@@ -37,7 +37,7 @@
 
 <div id="playlist-container">
 	<ul id="playlist"></ul>
-	<input type="text" id="url" name="url" value="" placeholder="Paste a Soundcloud Url"><div id="add">+</div>
+	<input type="text" id="url" name="url" value="" placeholder="Paste a Soundcloud Url"><button id="add">add URL</button>
 </div>
 <div id="search-container">
 	<input type="text" id="search" name="search" value="" placeholder="search Soundcloud">
@@ -47,12 +47,13 @@
 <script type="text/x-jquery-tmpl" id="listItemTemplate">
 	<img class="playlist-thumb" src="${src}"/>
 	<div class="title">${title}</div>
-	<button class="load-a">load in A</button>
-	<button class="load-b">load in B</button>
+	<div class="load-a load">A</div>
+	<div class="load-b load">B</div>
+	<div class="delete load">X</div>
 </script>
 <script type="text/x-jquery-tmpl" id="searchItemTemplate">
 	<img class="search-thumb" src="${src}"/>
-	<div class="title">${title}</div>
+	<div class="title"><p>${title}</p></div>
 	<button class="add-list">add to list</button>
 </script>
 
