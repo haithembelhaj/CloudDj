@@ -100,7 +100,7 @@ Deck = (function(_super) {
       'background-image': "url(" + this.track.sc.waveform_url + "), -webkit-gradient(linear, left top, right top, color-stop(0%,#c586e8), color-stop(100%,#6343f2))"
     });
     this.waveform.css({
-      'background-image': "url(" + this.track.sc.waveform_url + "),-webkit-gradient(linear, left top, right top, color-stop(0%,#70d8f4), color-stop(100%,#3ca9fc))"
+      'background-image': "url(" + this.track.sc.waveform_url + "),-webkit-gradient(linear, left top, right top, color-stop(1%,#84d1f4), color-stop(49%,#2d74e5), color-stop(99%,#f24bef))"
     });
     this.cover.attr('src', this.track.sc.artwork_url);
     if (!this.track.buffer) {
