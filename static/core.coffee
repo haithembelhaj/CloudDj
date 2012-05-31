@@ -42,6 +42,7 @@ class Deck extends Spine.Controller
 		'.cover' : 'cover'
 		'.effect' : 'effect'
 		'.playhead' : 'cursor'
+		'.waveform' : 'waveform'
 
 	constructor: ->
 		super
@@ -56,12 +57,14 @@ class Deck extends Spine.Controller
 		@source?.noteOff(0)
 		@player.css  'background-color' : 'white'
 		@player.css 'background-image' : "url(#{@track.sc.waveform_url})"
+		@waveform.css 'background-image' : "url(#{@track.sc.waveform_url})"
 		@cover.attr 'src', @track.sc.artwork_url
 		if not @track.buffer
 			url = track.sc.stream_url+"?client_id=#{APPID}"
 			getBuffer '/stream?url='+escape(url), (buffer)=>
 				@track.buffer = buffer
 				@path = @track.buffer.duration/400
+				@wavePath =  @track.buffer.duration/2000
 				@track.save()
 				@player.css  'background-color' : '#5C5CD6'
 				console.log "Track loaded"
@@ -99,6 +102,7 @@ class Deck extends Spine.Controller
 		@source.noteOff(0)
 		@playing = false
 		clearInterval @updater
+		clearInterval @waver
 
 	jumpTo: (e)->
 		if @playing
@@ -107,7 +111,9 @@ class Deck extends Spine.Controller
 		else
 			@track.pausedAt = e.offsetX*@path
 
+		@track.save()
 		@updateCursor e.offsetX
+		@updateWave @track.pausedAt/@wavePath
 
 	updateCursor: (px)=>
 		clearInterval @updater if @cursor.width() is 400
@@ -116,11 +122,26 @@ class Deck extends Spine.Controller
 		else
 			@cursor.width (i,w)-> w+1
 
+	updateWave: (px)=>
+		clearInterval @waver if @waveform.css("background-position-x") is "-1800px"
+		if px
+			val = 200-px
+			@waveform.css "background-position-x", val
+		else
+			@waveform.css "background-position-x", (i,x)-> 
+				val = parseInt(x.slice(0,-2))-1
+				return "#{val}px"
+
 	updateTempo: ->
 		val = ((@tempo.val()-50)/200) + 1
+		
 		@source.playbackRate.value = val
 		if @updater then clearInterval @updater
 		@updater = setInterval @updateCursor, (@path*1000)/val
+
+		if @waver then clearInterval @waver
+		@waver = setInterval @updateWave, (@wavePath*1000)/val
+
 
 	toggleFilter: (e)->
 		filter = parseInt($(e.target).text())

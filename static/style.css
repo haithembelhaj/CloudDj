@@ -12,17 +12,35 @@
 }
 
 #decks .deck{
-	width: 550px;
+	width: 565px;
 	height: 200px;
 	position: relative;
 }
 
 #decks .player{
-	height: 150px;
+	height: 50px;
+	width: 400px;
+	position: absolute;
+	top: 100;
+	background-size: 100% 100%;
+}
+
+#decks .waveform{
+	height: 99px;
 	width: 400px;
 	position: absolute;
 	top: 0;
-	background-size: 100% 100%;
+	background-size: 2000px 99px;
+	background-position: 200px 0px;
+	background-repeat: no-repeat;
+	background-color: #B2C2F0;
+}
+
+#decks .waveform .bar{
+	height: 99px;
+	background-color: rgba(255, 0, 0, 0.5);
+	width: 1px;
+	margin-left: 200px;
 }
 
 #decks .player .playhead{
@@ -50,11 +68,19 @@
 	left: 170px;
 }
 
+#decks #deck-a .waveform{
+	left: 170px;
+}
+
 #decks #deck-b .cover{
 	left: 0px;
 }
 
 #decks #deck-b .player{
+	right: 15px;
+}
+
+#decks #deck-b .waveform{
 	right: 15px;
 }
 
