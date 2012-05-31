@@ -25,6 +25,7 @@ do ()->
 
 class Track extends Spine.Model
 	@configure "Track", "sc", "buffer"
+	@extend Spine.Model.Local
 
 
 class Deck extends Spine.Controller
@@ -166,13 +167,26 @@ class Playlist extends Spine.Controller
 	events: 
 		'click #add' : 'addSound'
 
+	constructor: ->
+		super
+		Track.bind 'create', @renderOne
+		Track.bind 'refresh', @render
+		Track.fetch()
+
+	render: =>
+		for track in Track.all()
+			@addOne track
+
+	renderOne: (track)=>
+		item = new Item(item : track)
+		@playlist.append(item.render().el)
+
 	addSound : ()->
 		url = @$('#url').val()
 		$.get "http://api.soundcloud.com/resolve.json?url=#{url}&client_id=#{APPID}", (data)=>
 			track = Track.create(sc : data)
 			track.save()
-			item = new Item(item : track)
-			@playlist.append(item.render().el)
+			
 
 class Item extends Spine.Controller
 

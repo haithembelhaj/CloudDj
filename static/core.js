@@ -46,6 +46,8 @@ Track = (function(_super) {
 
   Track.configure("Track", "sc", "buffer");
 
+  Track.extend(Spine.Model.Local);
+
   return Track;
 
 })(Spine.Model);
@@ -232,10 +234,6 @@ Playlist = (function(_super) {
 
   __extends(Playlist, _super);
 
-  function Playlist() {
-    Playlist.__super__.constructor.apply(this, arguments);
-  }
-
   Playlist.prototype.el = $('#playlist-container');
 
   Playlist.prototype.elements = {
@@ -246,20 +244,43 @@ Playlist = (function(_super) {
     'click #add': 'addSound'
   };
 
+  function Playlist() {
+    this.renderOne = __bind(this.renderOne, this);
+    this.render = __bind(this.render, this);    Playlist.__super__.constructor.apply(this, arguments);
+    Track.bind('create', this.renderOne);
+    Track.bind('refresh', this.render);
+    Track.fetch();
+  }
+
+  Playlist.prototype.render = function() {
+    var track, _i, _len, _ref, _results;
+    _ref = Track.all();
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      track = _ref[_i];
+      _results.push(this.addOne(track));
+    }
+    return _results;
+  };
+
+  Playlist.prototype.renderOne = function(track) {
+    var item;
+    item = new Item({
+      item: track
+    });
+    return this.playlist.append(item.render().el);
+  };
+
   Playlist.prototype.addSound = function() {
     var url,
       _this = this;
     url = this.$('#url').val();
     return $.get("http://api.soundcloud.com/resolve.json?url=" + url + "&client_id=" + APPID, function(data) {
-      var item, track;
+      var track;
       track = Track.create({
         sc: data
       });
-      track.save();
-      item = new Item({
-        item: track
-      });
-      return _this.playlist.append(item.render().el);
+      return track.save();
     });
   };
 
