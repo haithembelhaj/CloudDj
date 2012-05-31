@@ -103,7 +103,7 @@ Deck = (function(_super) {
       url = track.sc.stream_url + ("?client_id=" + APPID);
       return getBuffer('/stream?url=' + escape(url), function(buffer) {
         _this.track.buffer = buffer;
-        _this.path = _this.track.buffer.duration / 400;
+        _this.path = _this.track.buffer.duration / 550;
         _this.wavePath = _this.track.buffer.duration / 2000;
         _this.track.save();
         _this.player.css({
@@ -115,7 +115,7 @@ Deck = (function(_super) {
       this.player.css({
         'background-color': '#5C5CD6'
       });
-      this.path = this.track.buffer.duration / 400;
+      this.path = this.track.buffer.duration / 550;
       return this.wavePath = this.track.buffer.duration / 2000;
     }
   };
@@ -130,24 +130,26 @@ Deck = (function(_super) {
 
   Deck.prototype.play = function(startAt) {
     if (startAt == null) startAt = this.track.pausedAt;
-    this.source = context.createBufferSource();
-    this.source.buffer = this.track.buffer;
-    this.source.connect(this.gainNode);
-    this.source.connect(this.convolver);
-    this.convolver.connect(this.convolverGain);
-    this.convolverGain.connect(this.gainNode);
-    this.gainNode.connect(context.destination);
-    this.track.startedAt = Date.now();
-    if (startAt) {
-      this.track.pausedAt = startAt;
-      this.source.noteGrainOn(0, startAt, this.source.buffer.duration - startAt);
-    } else {
-      this.track.pausedAt = 0;
-      this.source.noteOn(0);
+    if (this.track.buffer) {
+      this.source = context.createBufferSource();
+      this.source.buffer = this.track.buffer;
+      this.source.connect(this.gainNode);
+      this.source.connect(this.convolver);
+      this.convolver.connect(this.convolverGain);
+      this.convolverGain.connect(this.gainNode);
+      this.gainNode.connect(context.destination);
+      this.track.startedAt = Date.now();
+      if (startAt) {
+        this.track.pausedAt = startAt;
+        this.source.noteGrainOn(0, startAt, this.source.buffer.duration - startAt);
+      } else {
+        this.track.pausedAt = 0;
+        this.source.noteOn(0);
+      }
+      this.track.save();
+      this.playing = true;
+      return this.updateTempo();
     }
-    this.track.save();
-    this.playing = true;
-    return this.updateTempo();
   };
 
   Deck.prototype.pause = function() {
@@ -172,9 +174,9 @@ Deck = (function(_super) {
   };
 
   Deck.prototype.updateCursor = function(px) {
-    if (this.cursor.width() === 400) clearInterval(this.updater);
-    if (px) {
-      return this.cursor.width(px);
+    if (px) this.cursor.width(px);
+    if (this.cursor.width() >= 550) {
+      return clearInterval(this.updater);
     } else {
       return this.cursor.width(function(i, w) {
         return w + 1;
@@ -184,17 +186,15 @@ Deck = (function(_super) {
 
   Deck.prototype.updateWave = function(px) {
     var val;
-    if (this.waveform.css("background-position-x") === "-1800px") {
-      clearInterval(this.waver);
-    }
     if (px) {
-      val = 200 - px;
-      return this.waveform.css("background-position-x", val);
+      val = 225 - px;
+      this.waveform.css("background-position-x", val);
+    }
+    val = parseInt(this.waveform.css("background-position-x").slice(0, -2)) - 1;
+    if (val >= -1776) {
+      return this.waveform.css("background-position-x", "" + val + "px");
     } else {
-      return this.waveform.css("background-position-x", function(i, x) {
-        val = parseInt(x.slice(0, -2)) - 1;
-        return "" + val + "px";
-      });
+      return clearInterval(this.waver);
     }
   };
 
@@ -258,7 +258,9 @@ Playlist = (function(_super) {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       track = _ref[_i];
-      _results.push(this.addOne(track));
+      track.buffer = "";
+      track.save();
+      _results.push(this.renderOne(track));
     }
     return _results;
   };

@@ -64,39 +64,40 @@ class Deck extends Spine.Controller
 			url = track.sc.stream_url+"?client_id=#{APPID}"
 			getBuffer '/stream?url='+escape(url), (buffer)=>
 				@track.buffer = buffer
-				@path = @track.buffer.duration/400
+				@path = @track.buffer.duration/550
 				@wavePath =  @track.buffer.duration/2000
 				@track.save()
 				@player.css  'background-color' : '#5C5CD6'
 				console.log "Track loaded"
 		else
 			@player.css  'background-color' : '#5C5CD6'
-			@path = @track.buffer.duration/400
+			@path = @track.buffer.duration/550
 			@wavePath =  @track.buffer.duration/2000
 
 	togglePlay: ()->
 		if @playing then @pause() else @play()
 
 	play: (startAt= @track.pausedAt) ->
-		@source = context.createBufferSource()
-		@source.buffer = @track.buffer
-		#@gainNode = context.createGainNode()
-		@source.connect @gainNode
-		@source.connect @convolver
-		@convolver.connect @convolverGain
-		@convolverGain.connect @gainNode
-		@gainNode.connect context.destination
-		@track.startedAt = Date.now()
-		if startAt
-			@track.pausedAt = startAt
-			@source.noteGrainOn 0, startAt, @source.buffer.duration - startAt
-		else 
-			@track.pausedAt = 0
-			@source.noteOn(0)
+		if @track.buffer
+			@source = context.createBufferSource()
+			@source.buffer = @track.buffer
+			#@gainNode = context.createGainNode()
+			@source.connect @gainNode
+			@source.connect @convolver
+			@convolver.connect @convolverGain
+			@convolverGain.connect @gainNode
+			@gainNode.connect context.destination
+			@track.startedAt = Date.now()
+			if startAt
+				@track.pausedAt = startAt
+				@source.noteGrainOn 0, startAt, @source.buffer.duration - startAt
+			else 
+				@track.pausedAt = 0
+				@source.noteOn(0)
 
-		@track.save()
-		@playing = true
-		@updateTempo()
+			@track.save()
+			@playing = true
+			@updateTempo()
 
 	pause: ->
 		@track.pausedAt += (Date.now() - @track.startedAt) / 1000 
@@ -118,21 +119,23 @@ class Deck extends Spine.Controller
 		@updateWave @track.pausedAt/@wavePath
 
 	updateCursor: (px)=>
-		clearInterval @updater if @cursor.width() is 400
 		if px
 			@cursor.width px
+		if @cursor.width() >= 550
+			clearInterval @updater 
 		else
 			@cursor.width (i,w)-> w+1
 
 	updateWave: (px)=>
-		clearInterval @waver if @waveform.css("background-position-x") is "-1800px"
 		if px
-			val = 200-px
+			val = 225-px
 			@waveform.css "background-position-x", val
+
+		val = parseInt(@waveform.css("background-position-x").slice(0,-2))-1
+		if  val >= -1776
+			@waveform.css "background-position-x", "#{val}px"
 		else
-			@waveform.css "background-position-x", (i,x)-> 
-				val = parseInt(x.slice(0,-2))-1
-				return "#{val}px"
+			clearInterval @waver
 
 	updateTempo: ->
 		val = ((@tempo.val()-50)/200) + 1
@@ -175,7 +178,9 @@ class Playlist extends Spine.Controller
 
 	render: =>
 		for track in Track.all()
-			@addOne track
+			track.buffer = ""
+			track.save()
+			@renderOne track
 
 	renderOne: (track)=>
 		item = new Item(item : track)
