@@ -160,8 +160,14 @@ Deck = (function(_super) {
   };
 
   Deck.prototype.updateCursor = function(px) {
-    if (px) this.cursor.css('width', px);
-    return this.cursor.css('width', '+=1');
+    if (this.cursor.width() === 400) clearInterval(this.updater);
+    if (px) {
+      return this.cursor.width(px);
+    } else {
+      return this.cursor.width(function(i, w) {
+        return w + 1;
+      });
+    }
   };
 
   Deck.prototype.updateTempo = function() {

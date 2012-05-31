@@ -93,7 +93,6 @@ class Deck extends Spine.Controller
 		@playing = true
 		@updateTempo()
 
-
 	pause: ->
 		@track.pausedAt += (Date.now() - @track.startedAt) / 1000 
 		@track.save()
@@ -110,12 +109,12 @@ class Deck extends Spine.Controller
 
 		@updateCursor e.offsetX
 
-
 	updateCursor: (px)=>
+		clearInterval @updater if @cursor.width() is 400
 		if px
-			@cursor.css 'width', px
-
-		@cursor.css 'width', '+=1'
+			@cursor.width px
+		else
+			@cursor.width (i,w)-> w+1
 
 	updateTempo: ->
 		val = ((@tempo.val()-50)/200) + 1
