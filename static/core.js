@@ -63,7 +63,7 @@ Deck = (function(_super) {
   Deck.prototype.events = {
     'click .cover': 'togglePlay',
     'change .tempo': 'updateTempo',
-    'click .filters button': 'toggleFilter',
+    'click .filters .filter': 'toggleFilter',
     'change .effect': 'effectVolume',
     'click .player': 'jumpTo'
   };
@@ -95,11 +95,12 @@ Deck = (function(_super) {
       _this = this;
     this.track = track;
     if ((_ref = this.source) != null) _ref.noteOff(0);
+    this.el.addClass('buffering');
     this.player.css({
-      'background-image': "url(" + this.track.sc.waveform_url + ")"
+      'background-image': "url(" + this.track.sc.waveform_url + "), -webkit-gradient(linear, left top, right top, color-stop(0%,#c586e8), color-stop(100%,#6343f2))"
     });
     this.waveform.css({
-      'background-image': "url(" + this.track.sc.waveform_url + ")"
+      'background-image': "url(" + this.track.sc.waveform_url + "),-webkit-gradient(linear, left top, right top, color-stop(0%,#70d8f4), color-stop(100%,#3ca9fc))"
     });
     this.cover.attr('src', this.track.sc.artwork_url);
     if (!this.track.buffer) {
@@ -109,11 +110,10 @@ Deck = (function(_super) {
         _this.path = _this.track.buffer.duration / 550;
         _this.wavePath = _this.track.buffer.duration / 2000;
         _this.track.save();
-        _this.player.addClass('active');
-        return console.log("Track loaded");
+        return _this.el.removeClass('buffering');
       });
     } else {
-      this.player.addClass('active');
+      this.el.removeClass('buffering');
       this.path = this.track.buffer.duration / 550;
       return this.wavePath = this.track.buffer.duration / 2000;
     }
@@ -122,7 +122,6 @@ Deck = (function(_super) {
   Deck.prototype.unloadTrack = function() {
     if (this.playing) this.pause();
     this.track = '';
-    this.player.removeClass('active');
     this.player.css({
       'background-image': "none"
     });
@@ -223,9 +222,12 @@ Deck = (function(_super) {
   };
 
   Deck.prototype.toggleFilter = function(e) {
-    var filter;
-    filter = parseInt($(e.target).text());
-    return this.convolver.buffer = filterBuffers[filter - 1];
+    var elem, filter;
+    elem = $(e.target);
+    filter = parseInt(elem.attr('filter'));
+    this.convolver.buffer = filterBuffers[filter - 1];
+    $('.filters .filter').removeClass('active');
+    return elem.addClass('active');
   };
 
   Deck.prototype.effectVolume = function() {

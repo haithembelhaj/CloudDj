@@ -34,7 +34,7 @@ class Deck extends Spine.Controller
 	events:
 		'click .cover' : 'togglePlay'
 		'change .tempo' : 'updateTempo'
-		'click .filters button' : 'toggleFilter'
+		'click .filters .filter' : 'toggleFilter'
 		'change .effect' : 'effectVolume'
 		'click .player' : 'jumpTo'
 
@@ -58,8 +58,9 @@ class Deck extends Spine.Controller
 	loadTrack: (track)=>
 		@track = track
 		@source?.noteOff(0)
-		@player.css 'background-image' : "url(#{@track.sc.waveform_url})"
-		@waveform.css 'background-image' : "url(#{@track.sc.waveform_url})"
+		@el.addClass 'buffering'
+		@player.css 'background-image' : "url(#{@track.sc.waveform_url}), -webkit-gradient(linear, left top, right top, color-stop(0%,#c586e8), color-stop(100%,#6343f2))"
+		@waveform.css 'background-image' : "url(#{@track.sc.waveform_url}),-webkit-gradient(linear, left top, right top, color-stop(0%,#70d8f4), color-stop(100%,#3ca9fc))"
 		@cover.attr 'src', @track.sc.artwork_url
 		if not @track.buffer
 			url = track.sc.stream_url+"?client_id=#{APPID}"
@@ -68,17 +69,15 @@ class Deck extends Spine.Controller
 				@path = @track.buffer.duration/550
 				@wavePath =  @track.buffer.duration/2000
 				@track.save()
-				@player.addClass 'active'
-				console.log "Track loaded"
+				@el.removeClass 'buffering'
 		else
-			@player.addClass 'active'
+			@el.removeClass 'buffering'
 			@path = @track.buffer.duration/550
 			@wavePath =  @track.buffer.duration/2000
 
 	unloadTrack: ()=>
 		@pause() if @playing
 		@track = ''
-		@player.removeClass 'active'
 		@player.css 'background-image' : "none"
 		@waveform.css 'background-image' : "none"
 		@cover.attr 'src', ''
@@ -159,8 +158,11 @@ class Deck extends Spine.Controller
 
 
 	toggleFilter: (e)->
-		filter = parseInt($(e.target).text())
+		elem = $(e.target)
+		filter = parseInt elem.attr('filter')
 		@convolver.buffer = filterBuffers[filter-1]
+		$('.filters .filter').removeClass 'active'
+		elem.addClass 'active'
 
 	effectVolume: ->
 		@convolverGain.gain.value = @effect.val()/100
