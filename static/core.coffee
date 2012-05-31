@@ -140,7 +140,7 @@ class Deck extends Spine.Controller
 			val = 225-px
 			@waveform.css "background-position-x", val
 
-		val = parseInt(@waveform.css("background-position-x").slice(0,-2))-2
+		val = parseInt(@waveform.css("background-position-x").slice(0,-2))-1
 		if  val >= -2776
 			@waveform.css "background-position-x", "#{val}px"
 		else
@@ -154,7 +154,7 @@ class Deck extends Spine.Controller
 		@updater = setInterval @updateCursor, (@path*1000)*2/val
 
 		if @waver then clearInterval @waver
-		@waver = setInterval @updateWave, (@wavePath*1000)*2/val
+		@waver = setInterval @updateWave, (@wavePath*1000)/val
 
 
 	toggleFilter: (e)->

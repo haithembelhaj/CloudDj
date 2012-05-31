@@ -203,7 +203,7 @@ Deck = (function(_super) {
       val = 225 - px;
       this.waveform.css("background-position-x", val);
     }
-    val = parseInt(this.waveform.css("background-position-x").slice(0, -2)) - 2;
+    val = parseInt(this.waveform.css("background-position-x").slice(0, -2)) - 1;
     if (val >= -2776) {
       return this.waveform.css("background-position-x", "" + val + "px");
     } else {
@@ -218,7 +218,7 @@ Deck = (function(_super) {
     if (this.updater) clearInterval(this.updater);
     this.updater = setInterval(this.updateCursor, (this.path * 1000) * 2 / val);
     if (this.waver) clearInterval(this.waver);
-    return this.waver = setInterval(this.updateWave, (this.wavePath * 1000) * 2 / val);
+    return this.waver = setInterval(this.updateWave, (this.wavePath * 1000) / val);
   };
 
   Deck.prototype.toggleFilter = function(e) {
