@@ -96,9 +96,6 @@ Deck = (function(_super) {
     this.track = track;
     if ((_ref = this.source) != null) _ref.noteOff(0);
     this.player.css({
-      'background-color': 'white'
-    });
-    this.player.css({
       'background-image': "url(" + this.track.sc.waveform_url + ")"
     });
     this.waveform.css({
@@ -112,15 +109,11 @@ Deck = (function(_super) {
         _this.path = _this.track.buffer.duration / 550;
         _this.wavePath = _this.track.buffer.duration / 2000;
         _this.track.save();
-        _this.player.css({
-          'background-color': '#5C5CD6'
-        });
+        _this.player.addClass('active');
         return console.log("Track loaded");
       });
     } else {
-      this.player.css({
-        'background-color': '#5C5CD6'
-      });
+      this.player.addClass('active');
       this.path = this.track.buffer.duration / 550;
       return this.wavePath = this.track.buffer.duration / 2000;
     }
@@ -129,9 +122,7 @@ Deck = (function(_super) {
   Deck.prototype.unloadTrack = function() {
     if (this.playing) this.pause();
     this.track = '';
-    this.player.css({
-      'background-color': 'white'
-    });
+    this.player.removeClass('active');
     this.player.css({
       'background-image': "none"
     });

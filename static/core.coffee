@@ -58,7 +58,6 @@ class Deck extends Spine.Controller
 	loadTrack: (track)=>
 		@track = track
 		@source?.noteOff(0)
-		@player.css  'background-color' : 'white'
 		@player.css 'background-image' : "url(#{@track.sc.waveform_url})"
 		@waveform.css 'background-image' : "url(#{@track.sc.waveform_url})"
 		@cover.attr 'src', @track.sc.artwork_url
@@ -69,17 +68,17 @@ class Deck extends Spine.Controller
 				@path = @track.buffer.duration/550
 				@wavePath =  @track.buffer.duration/2000
 				@track.save()
-				@player.css  'background-color' : '#5C5CD6'
+				@player.addClass 'active'
 				console.log "Track loaded"
 		else
-			@player.css  'background-color' : '#5C5CD6'
+			@player.addClass 'active'
 			@path = @track.buffer.duration/550
 			@wavePath =  @track.buffer.duration/2000
 
 	unloadTrack: ()=>
 		@pause() if @playing
 		@track = ''
-		@player.css  'background-color' : 'white'
+		@player.removeClass 'active'
 		@player.css 'background-image' : "none"
 		@waveform.css 'background-image' : "none"
 		@cover.attr 'src', ''
