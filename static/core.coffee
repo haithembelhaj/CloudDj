@@ -133,14 +133,14 @@ class Deck extends Spine.Controller
 		if @cursor.width() >= 550
 			clearInterval @updater 
 		else
-			@cursor.width (i,w)-> w+1
+			@cursor.width (i,w)-> w+2
 
 	updateWave: (px)=>
 		if px
 			val = 225-px
 			@waveform.css "background-position-x", val
 
-		val = parseInt(@waveform.css("background-position-x").slice(0,-2))-1
+		val = parseInt(@waveform.css("background-position-x").slice(0,-2))-2
 		if  val >= -2776
 			@waveform.css "background-position-x", "#{val}px"
 		else
@@ -151,10 +151,10 @@ class Deck extends Spine.Controller
 		
 		@source.playbackRate.value = val
 		if @updater then clearInterval @updater
-		@updater = setInterval @updateCursor, (@path*1000)/val
+		@updater = setInterval @updateCursor, (@path*1000)*2/val
 
 		if @waver then clearInterval @waver
-		@waver = setInterval @updateWave, (@wavePath*1000)/val
+		@waver = setInterval @updateWave, (@wavePath*1000)*2/val
 
 
 	toggleFilter: (e)->

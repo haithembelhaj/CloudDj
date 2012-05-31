@@ -192,7 +192,7 @@ Deck = (function(_super) {
       return clearInterval(this.updater);
     } else {
       return this.cursor.width(function(i, w) {
-        return w + 1;
+        return w + 2;
       });
     }
   };
@@ -203,7 +203,7 @@ Deck = (function(_super) {
       val = 225 - px;
       this.waveform.css("background-position-x", val);
     }
-    val = parseInt(this.waveform.css("background-position-x").slice(0, -2)) - 1;
+    val = parseInt(this.waveform.css("background-position-x").slice(0, -2)) - 2;
     if (val >= -2776) {
       return this.waveform.css("background-position-x", "" + val + "px");
     } else {
@@ -216,9 +216,9 @@ Deck = (function(_super) {
     val = ((this.tempo.val() - 50) / 200) + 1;
     this.source.playbackRate.value = val;
     if (this.updater) clearInterval(this.updater);
-    this.updater = setInterval(this.updateCursor, (this.path * 1000) / val);
+    this.updater = setInterval(this.updateCursor, (this.path * 1000) * 2 / val);
     if (this.waver) clearInterval(this.waver);
-    return this.waver = setInterval(this.updateWave, (this.wavePath * 1000) / val);
+    return this.waver = setInterval(this.updateWave, (this.wavePath * 1000) * 2 / val);
   };
 
   Deck.prototype.toggleFilter = function(e) {
