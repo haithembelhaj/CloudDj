@@ -34,12 +34,14 @@ class Deck extends Spine.Controller
 		'change .tempo' : 'changeTempo'
 		'click .filters button' : 'toggleFilter'
 		'change .effect' : 'effectVolume'
+		'click .player' : 'jumpTo'
 
 	elements:
 		'.tempo' : 'tempo'
 		'.player': 'player'
 		'.cover' : 'cover'
 		'.effect' : 'effect'
+		'.playhead' : 'cursor'
 
 	constructor: ->
 		super
@@ -59,27 +61,62 @@ class Deck extends Spine.Controller
 			url = track.sc.stream_url+"?client_id=#{APPID}"
 			getBuffer '/stream?url='+escape(url), (buffer)=>
 				@track.buffer = buffer
+				@path = @track.buffer.duration/400
 				@track.save()
-				@player.css  'background-color' : 'blue'
+				@player.css  'background-color' : '#5C5CD6'
 				console.log "Track loaded"
 		else
-			@player.css  'background-color' : 'blue'
+			@player.css  'background-color' : '#5C5CD6'
+			@path = @track.buffer.duration/400
 
 	togglePlay: ()->
-		if @playing then @source.noteOff(0) else @play()
-		@playing = !@playing
+		if @playing then @pause() else @play()
 
-	play: ->
+	play: (startAt= @track.pausedAt) ->
 		@source = context.createBufferSource()
+		@source.buffer = @track.buffer
 		#@gainNode = context.createGainNode()
 		@source.connect @gainNode
 		@source.connect @convolver
 		@convolver.connect @convolverGain
 		@convolverGain.connect @gainNode
 		@gainNode.connect context.destination
-		@source.buffer = @track.buffer
-		@source.noteOn(0)
+		@track.startedAt = Date.now()
+		if startAt
+			@track.pausedAt = startAt
+			@source.noteGrainOn 0, startAt, @source.buffer.duration - startAt
+		else 
+			@track.pausedAt = 0
+			@source.noteOn(0)
 
+		@track.save()
+		@playing = true
+		@changeTempo()
+		@updater = setInterval @updateCursor, (@path*1000)/@source.playbackRate
+
+
+	pause: ->
+		@track.pausedAt += (Date.now() - @track.startedAt) / 1000 
+		@track.save()
+		@source.noteOff(0)
+		@playing = false
+		clearInterval @updater
+
+	jumpTo: (e)->
+		if @playing
+			@pause()
+			@play e.offsetX*@path
+		else
+			@track.pausedAt = e.offsetX*@path
+
+		@updateCursor e.offsetX
+
+
+	updateCursor: (px)=>
+		if px
+			@cursor.css 'width', px
+
+		@cursor.css 'width', '+=1'
 
 	changeTempo: ->
 		val = ((@tempo.val()-50)/200) + 1

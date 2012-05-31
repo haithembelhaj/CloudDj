@@ -58,17 +58,20 @@ Deck = (function(_super) {
     'click .cover': 'togglePlay',
     'change .tempo': 'changeTempo',
     'click .filters button': 'toggleFilter',
-    'change .effect': 'effectVolume'
+    'change .effect': 'effectVolume',
+    'click .player': 'jumpTo'
   };
 
   Deck.prototype.elements = {
     '.tempo': 'tempo',
     '.player': 'player',
     '.cover': 'cover',
-    '.effect': 'effect'
+    '.effect': 'effect',
+    '.playhead': 'cursor'
   };
 
   function Deck() {
+    this.updateCursor = __bind(this.updateCursor, this);
     this.loadTrack = __bind(this.loadTrack, this);    Deck.__super__.constructor.apply(this, arguments);
     this.gainNode = context.createGainNode();
     this.convolver = context.createConvolver();
@@ -93,37 +96,73 @@ Deck = (function(_super) {
       url = track.sc.stream_url + ("?client_id=" + APPID);
       return getBuffer('/stream?url=' + escape(url), function(buffer) {
         _this.track.buffer = buffer;
+        _this.path = _this.track.buffer.duration / 400;
         _this.track.save();
         _this.player.css({
-          'background-color': 'blue'
+          'background-color': '#5C5CD6'
         });
         return console.log("Track loaded");
       });
     } else {
-      return this.player.css({
-        'background-color': 'blue'
+      this.player.css({
+        'background-color': '#5C5CD6'
       });
+      return this.path = this.track.buffer.duration / 400;
     }
   };
 
   Deck.prototype.togglePlay = function() {
     if (this.playing) {
-      this.source.noteOff(0);
+      return this.pause();
     } else {
-      this.play();
+      return this.play();
     }
-    return this.playing = !this.playing;
   };
 
-  Deck.prototype.play = function() {
+  Deck.prototype.play = function(startAt) {
+    if (startAt == null) startAt = this.track.pausedAt;
     this.source = context.createBufferSource();
+    this.source.buffer = this.track.buffer;
     this.source.connect(this.gainNode);
     this.source.connect(this.convolver);
     this.convolver.connect(this.convolverGain);
     this.convolverGain.connect(this.gainNode);
     this.gainNode.connect(context.destination);
-    this.source.buffer = this.track.buffer;
-    return this.source.noteOn(0);
+    this.track.startedAt = Date.now();
+    if (startAt) {
+      this.track.pausedAt = startAt;
+      this.source.noteGrainOn(0, startAt, this.source.buffer.duration - startAt);
+    } else {
+      this.track.pausedAt = 0;
+      this.source.noteOn(0);
+    }
+    this.track.save();
+    this.playing = true;
+    this.changeTempo();
+    return this.updater = setInterval(this.updateCursor, (this.path * 1000) / this.source.playbackRate);
+  };
+
+  Deck.prototype.pause = function() {
+    this.track.pausedAt += (Date.now() - this.track.startedAt) / 1000;
+    this.track.save();
+    this.source.noteOff(0);
+    this.playing = false;
+    return clearInterval(this.updater);
+  };
+
+  Deck.prototype.jumpTo = function(e) {
+    if (this.playing) {
+      this.pause();
+      this.play(e.offsetX * this.path);
+    } else {
+      this.track.pausedAt = e.offsetX * this.path;
+    }
+    return this.updateCursor(e.offsetX);
+  };
+
+  Deck.prototype.updateCursor = function(px) {
+    if (px) this.cursor.css('width', px);
+    return this.cursor.css('width', '+=1');
   };
 
   Deck.prototype.changeTempo = function() {
