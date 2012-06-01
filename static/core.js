@@ -222,12 +222,20 @@ Deck = (function(_super) {
   };
 
   Deck.prototype.toggleFilter = function(e) {
-    var elem, filter;
+    var current, elem;
     elem = $(e.target);
-    filter = parseInt(elem.attr('filter'));
-    this.convolver.buffer = filterBuffers[filter - 1];
-    $('.filters .filter').removeClass('active');
-    return elem.addClass('active');
+    current = parseInt(elem.attr('filter'));
+    if (this.lastFilter && this.lastFilter === current) {
+      elem.removeClass('active');
+      this.convolver.disconnect(0);
+      return this.lastFilter = '';
+    } else {
+      if (!this.lastFilter) this.convolver.connect(this.convolverGain);
+      this.lastFilter = current;
+      this.convolver.buffer = filterBuffers[this.lastFilter - 1];
+      $('.filters .filter').removeClass('active');
+      return elem.addClass('active');
+    }
   };
 
   Deck.prototype.effectVolume = function() {

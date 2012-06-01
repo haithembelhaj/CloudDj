@@ -159,10 +159,17 @@ class Deck extends Spine.Controller
 
 	toggleFilter: (e)->
 		elem = $(e.target)
-		filter = parseInt elem.attr('filter')
-		@convolver.buffer = filterBuffers[filter-1]
-		$('.filters .filter').removeClass 'active'
-		elem.addClass 'active'
+		current = parseInt elem.attr('filter')
+		if @lastFilter and @lastFilter is current
+			elem.removeClass 'active'
+			@convolver.disconnect(0)
+			@lastFilter = ''
+		else 
+			@convolver.connect @convolverGain unless @lastFilter
+			@lastFilter = current
+			@convolver.buffer = filterBuffers[@lastFilter-1]
+			$('.filters .filter').removeClass 'active'
+			elem.addClass 'active'
 
 	effectVolume: ->
 		@convolverGain.gain.value = @effect.val()/100
