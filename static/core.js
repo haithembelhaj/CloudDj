@@ -105,7 +105,7 @@ Deck = (function(_super) {
     this.waveform.css({
       'background-image': "url(" + this.track.sc.waveform_url + "),-webkit-gradient(linear, left top, right top, color-stop(1%,#84d1f4), color-stop(49%,#2d74e5), color-stop(99%,#f24bef))"
     });
-    this.cover.attr('src', this.track.sc.artwork_url);
+    this.cover.css('background-image', "url(" + this.track.sc.artwork_url + ")");
     if (!this.track.buffer) {
       url = track.sc.stream_url + ("?client_id=" + APPID);
       return getBuffer('/stream?url=' + escape(url), function(ev) {

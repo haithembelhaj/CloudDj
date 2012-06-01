@@ -80,10 +80,28 @@ h2{
 }
 
 
+#decks .play-pause{
+	width: 60px;
+	height: 60px;
+	position: absolute;
+	background-image: url('images/play_button.png');
+	background-size: 100% 100%;
+	opacity: 0;
+	-webkit-transition: opacity 0.3s linear;
+	top: 20px;
+	left: 20px;
+}
+
 #decks .cover{
 	width: 100px;
 	height: 100px;
 	position: absolute;
+	background-size: 100% 100%;
+} 
+
+#decks .cover:hover .play-pause{
+	opacity: 1;
+	-webkit-transition: opacity 0.3s linear;
 }
 
 #decks #deck-a {
@@ -93,6 +111,7 @@ h2{
 #decks #deck-a .cover{
 	left: 20px;
 }
+
 
 #decks #deck-a .player{
 	left: 20px;	
@@ -106,6 +125,7 @@ h2{
 #decks #deck-b .cover{
 	left: 0px;
 }
+
 
 #decks #deck-b .player{
 	right: 15px;

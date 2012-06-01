@@ -63,7 +63,7 @@ class Deck extends Spine.Controller
 		@el.addClass 'buffering'
 		@player.css 'background-image' : "url(#{@track.sc.waveform_url}), -webkit-gradient(linear, left top, right top, color-stop(0%,#c586e8), color-stop(100%,#6343f2))"
 		@waveform.css 'background-image' : "url(#{@track.sc.waveform_url}),-webkit-gradient(linear, left top, right top, color-stop(1%,#84d1f4), color-stop(49%,#2d74e5), color-stop(99%,#f24bef))"
-		@cover.attr 'src', @track.sc.artwork_url
+		@cover.css 'background-image', "url(#{@track.sc.artwork_url})"
 		if not @track.buffer
 			url = track.sc.stream_url+"?client_id=#{APPID}"
 			getBuffer '/stream?url='+escape(url),
