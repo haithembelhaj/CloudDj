@@ -10,10 +10,11 @@ filters = [
 
 filterBuffers = []
 
-getBuffer = (url, callback)->
+getBuffer = (url, progress, callback)->
 	request = new XMLHttpRequest
 	request.open "GET", url , true
 	request.responseType = "arraybuffer"
+	request.onprogress = progress
 	request.onload = ()->
 		buffer = context.createBuffer request.response, false
 		callback buffer
@@ -21,8 +22,9 @@ getBuffer = (url, callback)->
 
 do ()->
 	for filter in filters
-		getBuffer filter, (buffer)->
-			filterBuffers.push buffer
+		getBuffer filter,
+			(e)-> false, 
+			(buffer)-> filterBuffers.push buffer
 
 class Track extends Spine.Model
 	@configure "Track", "sc", "buffer"
@@ -64,12 +66,15 @@ class Deck extends Spine.Controller
 		@cover.attr 'src', @track.sc.artwork_url
 		if not @track.buffer
 			url = track.sc.stream_url+"?client_id=#{APPID}"
-			getBuffer '/stream?url='+escape(url), (buffer)=>
-				@track.buffer = buffer
-				@path = @track.buffer.duration/550
-				@wavePath =  @track.buffer.duration/3000
-				@track.save()
-				@el.removeClass 'buffering'
+			getBuffer '/stream?url='+escape(url),
+				(ev) => @cursor.width ((ev.loaded/ev.total)*100)+"%",
+				(buffer)=>
+					@track.buffer = buffer
+					@path = @track.buffer.duration/550
+					@wavePath =  @track.buffer.duration/3000
+					@track.save()
+					@cursor.width 0
+					@el.removeClass 'buffering'
 		else
 			@el.removeClass 'buffering'
 			@path = @track.buffer.duration/550

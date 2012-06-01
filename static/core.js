@@ -15,11 +15,12 @@ filters = ["static/impulse-responses/matrix-reverb3.wav", "static/impulse-respon
 
 filterBuffers = [];
 
-getBuffer = function(url, callback) {
+getBuffer = function(url, progress, callback) {
   var request;
   request = new XMLHttpRequest;
   request.open("GET", url, true);
   request.responseType = "arraybuffer";
+  request.onprogress = progress;
   request.onload = function() {
     var buffer;
     buffer = context.createBuffer(request.response, false);
@@ -33,7 +34,9 @@ getBuffer = function(url, callback) {
   _results = [];
   for (_i = 0, _len = filters.length; _i < _len; _i++) {
     filter = filters[_i];
-    _results.push(getBuffer(filter, function(buffer) {
+    _results.push(getBuffer(filter, function(e) {
+      return false;
+    }, function(buffer) {
       return filterBuffers.push(buffer);
     }));
   }
@@ -105,11 +108,14 @@ Deck = (function(_super) {
     this.cover.attr('src', this.track.sc.artwork_url);
     if (!this.track.buffer) {
       url = track.sc.stream_url + ("?client_id=" + APPID);
-      return getBuffer('/stream?url=' + escape(url), function(buffer) {
+      return getBuffer('/stream?url=' + escape(url), function(ev) {
+        return _this.cursor.width(((ev.loaded / ev.total) * 100) + "%");
+      }, function(buffer) {
         _this.track.buffer = buffer;
         _this.path = _this.track.buffer.duration / 550;
         _this.wavePath = _this.track.buffer.duration / 3000;
         _this.track.save();
+        _this.cursor.width(0);
         return _this.el.removeClass('buffering');
       });
     } else {
