@@ -231,7 +231,7 @@ Deck = (function(_super) {
     this.context.drawImage(this.image, dx, 0, 3000, 99);
     this.context.beginPath();
     this.context.lineWidth = 1;
-    this.context.strokeStyle = "rgba(0, 0, 255, 0.2)";
+    this.context.strokeStyle = "rgba(0, 0, 255, 0.5)";
     this.context.moveTo(0, 49);
     this.context.lineTo(450, 49);
     this.context.stroke();

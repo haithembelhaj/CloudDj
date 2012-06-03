@@ -169,7 +169,7 @@ class Deck extends Spine.Controller
 		#the ruler
 		@context.beginPath()
 		@context.lineWidth = 1
-		@context.strokeStyle = "rgba(0, 0, 255, 0.2)"
+		@context.strokeStyle = "rgba(0, 0, 255, 0.5)"
 		@context.moveTo(0,49)
 		@context.lineTo(450,49)
 		@context.stroke()
