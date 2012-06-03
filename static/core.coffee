@@ -54,7 +54,6 @@ class Deck extends Spine.Controller
 		@convolverGain = context.createGainNode()
 		@convolverGain.gain.value = 0
 		@playing = false
-		Track.bind 'destroy', @unloadTrack
 		##canvas stuff
 		@waveCtx = @waveform[0].getContext('2d')
 		@playerCtx = @player[0].getContext('2d')
@@ -65,6 +64,7 @@ class Deck extends Spine.Controller
 
 	loadTrack: (track)=>
 		@track = track
+		@track.bind 'destroy', @unloadTrack
 		@source?.noteOff(0)
 		@wavePos = 225
 		@playerPos = 0

@@ -91,7 +91,6 @@ Deck = (function(_super) {
     this.convolverGain = context.createGainNode();
     this.convolverGain.gain.value = 0;
     this.playing = false;
-    Track.bind('destroy', this.unloadTrack);
     this.waveCtx = this.waveform[0].getContext('2d');
     this.playerCtx = this.player[0].getContext('2d');
     this.image = new Image();
@@ -105,6 +104,7 @@ Deck = (function(_super) {
     var url, _ref,
       _this = this;
     this.track = track;
+    this.track.bind('destroy', this.unloadTrack);
     if ((_ref = this.source) != null) _ref.noteOff(0);
     this.wavePos = 225;
     this.playerPos = 0;
