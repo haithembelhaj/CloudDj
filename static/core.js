@@ -76,7 +76,6 @@ Deck = (function(_super) {
     '.player': 'player',
     '.cover': 'cover',
     '.effect': 'effect',
-    '.playhead': 'cursor',
     '.waveform': 'waveform'
   };
 
@@ -93,11 +92,12 @@ Deck = (function(_super) {
     this.convolverGain.gain.value = 0;
     this.playing = false;
     Track.bind('destroy', this.unloadTrack);
-    this.context = this.waveform[0].getContext('2d');
+    this.waveCtx = this.waveform[0].getContext('2d');
+    this.playerCtx = this.player[0].getContext('2d');
     this.image = new Image();
-    this.wavePos = 255;
     this.image.onload = function() {
-      return _this.drawWave(255);
+      _this.drawWave(225);
+      return _this.drawCursor(0);
     };
   }
 
@@ -106,23 +106,22 @@ Deck = (function(_super) {
       _this = this;
     this.track = track;
     if ((_ref = this.source) != null) _ref.noteOff(0);
+    this.wavePos = 225;
+    this.playerPos = 0;
     this.el.addClass('buffering');
-    this.player.css({
-      'background-image': "url(" + this.track.sc.waveform_url + "), -webkit-gradient(linear, left top, right top, color-stop(0%,#c586e8), color-stop(100%,#6343f2))"
-    });
     this.image.src = this.track.sc.waveform_url;
     this.cover.css('background-image', "url(" + this.track.sc.artwork_url + ")");
     if (!this.track.buffer) {
       url = track.sc.stream_url + ("?client_id=" + APPID);
       return getBuffer('/stream?url=' + escape(url), function(ev) {
-        return _this.cursor.width(((ev.loaded / ev.total) * 100) + "%");
+        return _this.drawCursor((ev.loaded / ev.total) * 550);
       }, function(buffer) {
         _this.track.buffer = buffer;
         _this.path = _this.track.buffer.duration / 550;
         _this.wavePath = _this.track.buffer.duration / 3000;
         _this.track.save();
-        _this.cursor.width(0);
-        return _this.el.removeClass('buffering');
+        _this.el.removeClass('buffering');
+        return _this.drawCursor(0);
       });
     } else {
       this.el.removeClass('buffering');
@@ -134,11 +133,7 @@ Deck = (function(_super) {
   Deck.prototype.unloadTrack = function() {
     if (this.playing) this.pause();
     this.track = '';
-    this.player.css({
-      'background-image': "none"
-    });
-    this.cover.attr('src', '');
-    return this.cursor.width(0);
+    return this.drawCursor(0);
   };
 
   Deck.prototype.togglePlay = function() {
@@ -196,14 +191,29 @@ Deck = (function(_super) {
   };
 
   Deck.prototype.updateCursor = function(px) {
-    if (px) this.cursor.width(px);
-    if (this.cursor.width() >= 550) {
+    if (px) {
+      this.playerPos = px;
+      this.drawCursor(this.playerPos);
+    }
+    if (this.playerPos >= 550) {
       return clearInterval(this.updater);
     } else {
-      return this.cursor.width(function(i, w) {
-        return w + 2;
-      });
+      this.playerPos++;
+      return this.drawCursor(this.playerPos);
     }
+  };
+
+  Deck.prototype.drawCursor = function(px) {
+    var playerGradient;
+    this.playerCtx.clearRect(0, 0, 550, 50);
+    playerGradient = this.playerCtx.createLinearGradient(0, 0, 550, 50);
+    playerGradient.addColorStop(0, "#c586e8");
+    playerGradient.addColorStop(1, "#6343f2");
+    this.playerCtx.fillStyle = playerGradient;
+    this.playerCtx.fillRect(0, 0, 550, 50);
+    this.playerCtx.drawImage(this.image, 0, 0, 550, 50);
+    this.playerCtx.fillStyle = "rgba(0, 0, 255, 0.2)";
+    return this.playerCtx.fillRect(0, 0, px, 50);
   };
 
   Deck.prototype.updateWave = function(px) {
@@ -221,26 +231,26 @@ Deck = (function(_super) {
 
   Deck.prototype.drawWave = function(dx) {
     var waveGradient;
-    this.context.clearRect(0, 0, 3000, 99);
-    waveGradient = this.context.createLinearGradient(dx, 0, 3000 + dx, 99);
+    this.waveCtx.clearRect(0, 0, 3000, 99);
+    waveGradient = this.waveCtx.createLinearGradient(dx, 0, 3000 + dx, 99);
     waveGradient.addColorStop(0, "#84d1f4");
     waveGradient.addColorStop(0.5, "#2d74e5");
     waveGradient.addColorStop(1, "#f24bef");
-    this.context.fillStyle = waveGradient;
-    this.context.fillRect(dx, 0, 3000, 99);
-    this.context.drawImage(this.image, dx, 0, 3000, 99);
-    this.context.beginPath();
-    this.context.lineWidth = 1;
-    this.context.strokeStyle = "rgba(0, 0, 255, 0.5)";
-    this.context.moveTo(0, 49);
-    this.context.lineTo(450, 49);
-    this.context.stroke();
-    this.context.beginPath();
-    this.context.lineWidth = 2;
-    this.context.strokeStyle = "rgba(255, 0, 0, 0.5)";
-    this.context.moveTo(254, 0);
-    this.context.lineTo(254, 99);
-    return this.context.stroke();
+    this.waveCtx.fillStyle = waveGradient;
+    this.waveCtx.fillRect(dx, 0, 3000, 99);
+    this.waveCtx.drawImage(this.image, dx, 0, 3000, 99);
+    this.waveCtx.beginPath();
+    this.waveCtx.lineWidth = 1;
+    this.waveCtx.strokeStyle = "rgba(0, 0, 255, 0.5)";
+    this.waveCtx.moveTo(0, 49);
+    this.waveCtx.lineTo(450, 49);
+    this.waveCtx.stroke();
+    this.waveCtx.beginPath();
+    this.waveCtx.lineWidth = 2;
+    this.waveCtx.strokeStyle = "rgba(255, 0, 0, 0.5)";
+    this.waveCtx.moveTo(225, 0);
+    this.waveCtx.lineTo(225, 99);
+    return this.waveCtx.stroke();
   };
 
   Deck.prototype.updateTempo = function() {
@@ -248,7 +258,7 @@ Deck = (function(_super) {
     val = ((this.tempo.val() - 50) / 200) + 1;
     this.source.playbackRate.value = val;
     if (this.updater) clearInterval(this.updater);
-    this.updater = setInterval(this.updateCursor, (this.path * 1000) * 2 / val);
+    this.updater = setInterval(this.updateCursor, (this.path * 1000) / val);
     if (this.waver) clearInterval(this.waver);
     return this.waver = setInterval(this.updateWave, (this.wavePath * 1000) / val);
   };

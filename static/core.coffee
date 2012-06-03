@@ -45,7 +45,6 @@ class Deck extends Spine.Controller
 		'.player': 'player'
 		'.cover' : 'cover'
 		'.effect' : 'effect'
-		'.playhead' : 'cursor'
 		'.waveform' : 'waveform'
 
 	constructor: ->
@@ -57,30 +56,32 @@ class Deck extends Spine.Controller
 		@playing = false
 		Track.bind 'destroy', @unloadTrack
 		##canvas stuff
-		@context = @waveform[0].getContext('2d')
+		@waveCtx = @waveform[0].getContext('2d')
+		@playerCtx = @player[0].getContext('2d')
 		@image = new Image()
-		@wavePos = 255
-		@image.onload = ()=> @drawWave 255
+		@image.onload = ()=> 
+			@drawWave 225
+			@drawCursor 0
 
 	loadTrack: (track)=>
 		@track = track
 		@source?.noteOff(0)
+		@wavePos = 225
+		@playerPos = 0
 		@el.addClass 'buffering'
-		@player.css 'background-image' : "url(#{@track.sc.waveform_url}), -webkit-gradient(linear, left top, right top, color-stop(0%,#c586e8), color-stop(100%,#6343f2))"
-		#@waveform.css 'background-image' : "url(#{@track.sc.waveform_url}),-webkit-gradient(linear, left top, right top, color-stop(1%,#84d1f4), color-stop(49%,#2d74e5), color-stop(99%,#f24bef))"
 		@image.src = @track.sc.waveform_url
 		@cover.css 'background-image', "url(#{@track.sc.artwork_url})"
 		if not @track.buffer
 			url = track.sc.stream_url+"?client_id=#{APPID}"
 			getBuffer '/stream?url='+escape(url),
-				(ev) => @cursor.width ((ev.loaded/ev.total)*100)+"%",
+				(ev) => @drawCursor ((ev.loaded/ev.total)*550),
 				(buffer)=>
 					@track.buffer = buffer
 					@path = @track.buffer.duration/550
 					@wavePath =  @track.buffer.duration/3000
 					@track.save()
-					@cursor.width 0
 					@el.removeClass 'buffering'
+					@drawCursor 0
 		else
 			@el.removeClass 'buffering'
 			@path = @track.buffer.duration/550
@@ -89,10 +90,7 @@ class Deck extends Spine.Controller
 	unloadTrack: ()=>
 		@pause() if @playing
 		@track = ''
-		@player.css 'background-image' : "none"
-		#@waveform.css 'background-image' : "none"
-		@cover.attr 'src', ''
-		@cursor.width 0
+		@drawCursor 0
 
 	togglePlay: ()->
 		if @playing then @pause() else @play()
@@ -140,11 +138,28 @@ class Deck extends Spine.Controller
 
 	updateCursor: (px)=>
 		if px
-			@cursor.width px
-		if @cursor.width() >= 550
+			@playerPos = px
+			@drawCursor @playerPos
+
+		if @playerPos >= 550
 			clearInterval @updater 
 		else
-			@cursor.width (i,w)-> w+2
+			@playerPos++
+			@drawCursor @playerPos
+
+	drawCursor: (px)->
+		@playerCtx.clearRect 0, 0, 550, 50
+		#player
+		playerGradient = @playerCtx.createLinearGradient 0, 0, 550, 50
+		playerGradient.addColorStop 0, "#c586e8"
+		playerGradient.addColorStop 1, "#6343f2"
+		@playerCtx.fillStyle = playerGradient
+		@playerCtx.fillRect 0, 0, 550, 50
+		@playerCtx.drawImage @image, 0, 0, 550, 50
+		#cursor
+		@playerCtx.fillStyle = "rgba(0, 0, 255, 0.2)"
+		@playerCtx.fillRect 0, 0, px, 50
+
 
 	updateWave: (px)=>
 		if px
@@ -157,36 +172,36 @@ class Deck extends Spine.Controller
 			clearInterval @waver
 
 	drawWave: (dx)->
-		@context.clearRect 0, 0, 3000, 99
+		@waveCtx.clearRect 0, 0, 3000, 99
 		#wave
-		waveGradient = @context.createLinearGradient dx, 0, 3000+dx, 99
+		waveGradient = @waveCtx.createLinearGradient dx, 0, 3000+dx, 99
 		waveGradient.addColorStop 0, "#84d1f4"
 		waveGradient.addColorStop 0.5, "#2d74e5"
 		waveGradient.addColorStop 1, "#f24bef"
-		@context.fillStyle = waveGradient
-		@context.fillRect dx, 0, 3000, 99
-		@context.drawImage @image, dx, 0, 3000, 99
+		@waveCtx.fillStyle = waveGradient
+		@waveCtx.fillRect dx, 0, 3000, 99
+		@waveCtx.drawImage @image, dx, 0, 3000, 99
 		#the ruler
-		@context.beginPath()
-		@context.lineWidth = 1
-		@context.strokeStyle = "rgba(0, 0, 255, 0.5)"
-		@context.moveTo(0,49)
-		@context.lineTo(450,49)
-		@context.stroke()
+		@waveCtx.beginPath()
+		@waveCtx.lineWidth = 1
+		@waveCtx.strokeStyle = "rgba(0, 0, 255, 0.5)"
+		@waveCtx.moveTo(0,49)
+		@waveCtx.lineTo(450,49)
+		@waveCtx.stroke()
 		#the bar
-		@context.beginPath()
-		@context.lineWidth = 2
-		@context.strokeStyle = "rgba(255, 0, 0, 0.5)"
-		@context.moveTo(254,0)
-		@context.lineTo(254,99)
-		@context.stroke()
+		@waveCtx.beginPath()
+		@waveCtx.lineWidth = 2
+		@waveCtx.strokeStyle = "rgba(255, 0, 0, 0.5)"
+		@waveCtx.moveTo(225,0)
+		@waveCtx.lineTo(225,99)
+		@waveCtx.stroke()
 
 	updateTempo: ->
 		val = ((@tempo.val()-50)/200) + 1
 		
 		@source.playbackRate.value = val
 		if @updater then clearInterval @updater
-		@updater = setInterval @updateCursor, (@path*1000)*2/val
+		@updater = setInterval @updateCursor, (@path*1000)/val
 
 		if @waver then clearInterval @waver
 		@waver = setInterval @updateWave, (@wavePath*1000)/val

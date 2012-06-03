@@ -39,12 +39,8 @@ h2{
 }
 
 #decks .player{
-	height: 50px;
-	width: 550px;
 	position: absolute;
 	top: 100;
-	background-size: 100% 100%;
-	background-color: #ddd;
 }
 
 #decks .wave{
