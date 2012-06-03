@@ -152,7 +152,6 @@ Deck = (function(_super) {
       this.source.buffer = this.track.buffer;
       this.source.connect(this.gainNode);
       this.source.connect(this.convolver);
-      this.convolver.connect(this.convolverGain);
       this.convolverGain.connect(this.gainNode);
       this.gainNode.connect(context.destination);
       this.track.startedAt = Date.now();

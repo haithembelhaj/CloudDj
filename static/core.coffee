@@ -102,7 +102,7 @@ class Deck extends Spine.Controller
 			#@gainNode = context.createGainNode()
 			@source.connect @gainNode
 			@source.connect @convolver
-			@convolver.connect @convolverGain
+			#@convolver.connect @convolverGain
 			@convolverGain.connect @gainNode
 			@gainNode.connect context.destination
 			@track.startedAt = Date.now()
