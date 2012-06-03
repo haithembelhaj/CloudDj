@@ -56,13 +56,19 @@ class Deck extends Spine.Controller
 		@convolverGain.gain.value = 0
 		@playing = false
 		Track.bind 'destroy', @unloadTrack
+		##canvas stuff
+		@context = @waveform[0].getContext('2d')
+		@image = new Image()
+		@wavePos = 255
+		@image.onload = ()=> @drawWave 255
 
 	loadTrack: (track)=>
 		@track = track
 		@source?.noteOff(0)
 		@el.addClass 'buffering'
 		@player.css 'background-image' : "url(#{@track.sc.waveform_url}), -webkit-gradient(linear, left top, right top, color-stop(0%,#c586e8), color-stop(100%,#6343f2))"
-		@waveform.css 'background-image' : "url(#{@track.sc.waveform_url}),-webkit-gradient(linear, left top, right top, color-stop(1%,#84d1f4), color-stop(49%,#2d74e5), color-stop(99%,#f24bef))"
+		#@waveform.css 'background-image' : "url(#{@track.sc.waveform_url}),-webkit-gradient(linear, left top, right top, color-stop(1%,#84d1f4), color-stop(49%,#2d74e5), color-stop(99%,#f24bef))"
+		@image.src = @track.sc.waveform_url
 		@cover.css 'background-image', "url(#{@track.sc.artwork_url})"
 		if not @track.buffer
 			url = track.sc.stream_url+"?client_id=#{APPID}"
@@ -84,7 +90,7 @@ class Deck extends Spine.Controller
 		@pause() if @playing
 		@track = ''
 		@player.css 'background-image' : "none"
-		@waveform.css 'background-image' : "none"
+		#@waveform.css 'background-image' : "none"
 		@cover.attr 'src', ''
 		@cursor.width 0
 
@@ -142,14 +148,38 @@ class Deck extends Spine.Controller
 
 	updateWave: (px)=>
 		if px
-			val = 225-px
-			@waveform.css "background-position-x", val
-
-		val = parseInt(@waveform.css("background-position-x").slice(0,-2))-1
-		if  val >= -2776
-			@waveform.css "background-position-x", "#{val}px"
+			@wavePos = 225-px
+			@drawWave @wavePos 
+		@wavePos--
+		if  @wavePos >= -2776
+			@drawWave @wavePos 
 		else
 			clearInterval @waver
+
+	drawWave: (dx)->
+		@context.clearRect 0, 0, 3000, 99
+		#wave
+		waveGradient = @context.createLinearGradient dx, 0, 3000+dx, 99
+		waveGradient.addColorStop 0, "#84d1f4"
+		waveGradient.addColorStop 0.5, "#2d74e5"
+		waveGradient.addColorStop 1, "#f24bef"
+		@context.fillStyle = waveGradient
+		@context.fillRect dx, 0, 3000, 99
+		@context.drawImage @image, dx, 0, 3000, 99
+		#the ruler
+		@context.beginPath()
+		@context.lineWidth = 1
+		@context.strokeStyle = "rgba(0, 0, 255, 0.2)"
+		@context.moveTo(0,49)
+		@context.lineTo(450,49)
+		@context.stroke()
+		#the bar
+		@context.beginPath()
+		@context.lineWidth = 2
+		@context.strokeStyle = "rgba(255, 0, 0, 0.5)"
+		@context.moveTo(254,0)
+		@context.lineTo(254,99)
+		@context.stroke()
 
 	updateTempo: ->
 		val = ((@tempo.val()-50)/200) + 1

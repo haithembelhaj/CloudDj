@@ -84,13 +84,21 @@ Deck = (function(_super) {
     this.updateWave = __bind(this.updateWave, this);
     this.updateCursor = __bind(this.updateCursor, this);
     this.unloadTrack = __bind(this.unloadTrack, this);
-    this.loadTrack = __bind(this.loadTrack, this);    Deck.__super__.constructor.apply(this, arguments);
+    this.loadTrack = __bind(this.loadTrack, this);
+    var _this = this;
+    Deck.__super__.constructor.apply(this, arguments);
     this.gainNode = context.createGainNode();
     this.convolver = context.createConvolver();
     this.convolverGain = context.createGainNode();
     this.convolverGain.gain.value = 0;
     this.playing = false;
     Track.bind('destroy', this.unloadTrack);
+    this.context = this.waveform[0].getContext('2d');
+    this.image = new Image();
+    this.wavePos = 255;
+    this.image.onload = function() {
+      return _this.drawWave(255);
+    };
   }
 
   Deck.prototype.loadTrack = function(track) {
@@ -102,9 +110,7 @@ Deck = (function(_super) {
     this.player.css({
       'background-image': "url(" + this.track.sc.waveform_url + "), -webkit-gradient(linear, left top, right top, color-stop(0%,#c586e8), color-stop(100%,#6343f2))"
     });
-    this.waveform.css({
-      'background-image': "url(" + this.track.sc.waveform_url + "),-webkit-gradient(linear, left top, right top, color-stop(1%,#84d1f4), color-stop(49%,#2d74e5), color-stop(99%,#f24bef))"
-    });
+    this.image.src = this.track.sc.waveform_url;
     this.cover.css('background-image', "url(" + this.track.sc.artwork_url + ")");
     if (!this.track.buffer) {
       url = track.sc.stream_url + ("?client_id=" + APPID);
@@ -129,9 +135,6 @@ Deck = (function(_super) {
     if (this.playing) this.pause();
     this.track = '';
     this.player.css({
-      'background-image': "none"
-    });
-    this.waveform.css({
       'background-image': "none"
     });
     this.cover.attr('src', '');
@@ -204,17 +207,40 @@ Deck = (function(_super) {
   };
 
   Deck.prototype.updateWave = function(px) {
-    var val;
     if (px) {
-      val = 225 - px;
-      this.waveform.css("background-position-x", val);
+      this.wavePos = 225 - px;
+      this.drawWave(this.wavePos);
     }
-    val = parseInt(this.waveform.css("background-position-x").slice(0, -2)) - 1;
-    if (val >= -2776) {
-      return this.waveform.css("background-position-x", "" + val + "px");
+    this.wavePos--;
+    if (this.wavePos >= -2776) {
+      return this.drawWave(this.wavePos);
     } else {
       return clearInterval(this.waver);
     }
+  };
+
+  Deck.prototype.drawWave = function(dx) {
+    var waveGradient;
+    this.context.clearRect(0, 0, 3000, 99);
+    waveGradient = this.context.createLinearGradient(dx, 0, 3000 + dx, 99);
+    waveGradient.addColorStop(0, "#84d1f4");
+    waveGradient.addColorStop(0.5, "#2d74e5");
+    waveGradient.addColorStop(1, "#f24bef");
+    this.context.fillStyle = waveGradient;
+    this.context.fillRect(dx, 0, 3000, 99);
+    this.context.drawImage(this.image, dx, 0, 3000, 99);
+    this.context.beginPath();
+    this.context.lineWidth = 1;
+    this.context.strokeStyle = "rgba(0, 0, 255, 0.2)";
+    this.context.moveTo(0, 49);
+    this.context.lineTo(450, 49);
+    this.context.stroke();
+    this.context.beginPath();
+    this.context.lineWidth = 2;
+    this.context.strokeStyle = "rgba(255, 0, 0, 0.5)";
+    this.context.moveTo(254, 0);
+    this.context.lineTo(254, 99);
+    return this.context.stroke();
   };
 
   Deck.prototype.updateTempo = function() {

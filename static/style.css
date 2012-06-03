@@ -47,29 +47,14 @@ h2{
 	background-color: #ddd;
 }
 
+#decks .wave{
+	position: absolute;
+	top: 200px;
+}
+
 #decks .waveform{
-	height: 100px;
-	width: 450px;
 	position: absolute;
 	top: 0;
-	background-size: 3000px 99px;
-	background-position: 225px 0px;
-	background-repeat: no-repeat;
-	background-color: #eee;
-}
-
-#decks .waveform .bar{
-	height: 100px;
-	background-color: rgba(255, 0, 0, 0.5);
-	width: 2px;
-	margin-left: 223px;
-}
-
-#decks .waveform .ruler{
-	height: 1px;
-	background-color: rgba(0, 0, 255, 0.2);
-	width: 100%;
-	margin-top: -50px;
 }
 
 #decks .player .playhead{

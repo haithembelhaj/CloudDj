@@ -8,12 +8,13 @@
 	<script src="http://connect.soundcloud.com/sdk.js"></script>
 </head>
 <body>
+	
 <div id="decks">
 	<div id="deck-a" class="deck">
 		<input type="range" class="tempo" min="0" max="100" value="50"></input>
 		<div class="cover"><div class="play-pause"></div></div>
 		<div class="player"><div class="playhead"></div></div>
-		<div class="waveform"><div class="bar"></div><div class="ruler"></div></div>
+		<canvas class="waveform" width="450" height="99"></canvas>
 		<div class="filters">
 			<div class="load filter" filter="1">reverb</div>
 			<div class="load filter" filter="2">echo</div>
@@ -30,7 +31,7 @@
 		</div>
 		<div class="cover"><div class="play-pause"></div></div>
 		<div class="player"><div class="playhead"></div></div>
-		<div class="waveform"><div class="bar"></div><div class="ruler"></div></div>
+		<canvas class="waveform" width="450" height="99"></canvas>
 		<input type="range" class="tempo" min="0" max="100" value="50"></input>
 	</div>
 <input type="range" id="crossfader" min="0" max="100" value="50" onchange="crossfade(this);"></input>
