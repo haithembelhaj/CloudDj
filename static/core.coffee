@@ -263,7 +263,7 @@ class Playlist extends Spine.Controller
 		url = @$('#url').val()
 		$.get "http://api.soundcloud.com/resolve.json?url=#{url}&client_id=#{APPID}", (data)=>
 			track = Track.create(sc : data)
-			track.cover = data.sc.artwork_url or ''
+			track.cover = data.sc.artwork_url or "/static/images/logo.png"
 			track.save()
 
 	loadFile: (e)->
@@ -383,6 +383,7 @@ class searchItem extends Spine.Controller
 
 	addToList: ->
 		track = Track.create(sc : @item)
+		track.cover = data.sc.artwork_url or "/static/images/logo.png"
 		track.save()
 		#playlist.renderOne(sc : @item)
 

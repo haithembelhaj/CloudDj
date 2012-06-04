@@ -360,7 +360,7 @@ Playlist = (function(_super) {
       track = Track.create({
         sc: data
       });
-      track.cover = data.sc.artwork_url || '';
+      track.cover = data.sc.artwork_url || "/static/images/logo.png";
       return track.save();
     });
   };
@@ -588,6 +588,7 @@ searchItem = (function(_super) {
     track = Track.create({
       sc: this.item
     });
+    track.cover = data.sc.artwork_url || "/static/images/logo.png";
     return track.save();
   };
 
