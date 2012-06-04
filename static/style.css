@@ -12,6 +12,20 @@ h2{
 	letter-spacing: 0;
 }
 
+#connect{
+	background-repeat: no-repeat;
+	width: 109px;
+	height: 21px;
+}
+
+#connect.connect{
+	background-image: url('images/btn-connect-s.png');
+}
+
+#connect.disconnect{
+	background-image: url('images/btn-disconnect-s.png');
+}
+
 #decks{
 	width: 1200px;
 	margin-left: auto;

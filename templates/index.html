@@ -8,7 +8,7 @@
 	<script src="http://connect.soundcloud.com/sdk.js"></script>
 </head>
 <body>
-	
+<div id="connect"></div>
 <div id="decks">
 	<div id="deck-a" class="deck">
 		<input type="range" class="tempo" min="0" max="100" value="50"></input>
@@ -43,7 +43,8 @@
 	<input type="text" id="url" name="url" value="" placeholder="Paste a Soundcloud Url"><button id="add">add URL</button>
 </div>
 <div id="search-container">
-	<p><label>Search  </label><input type="text" id="search" name="search" value="" placeholder="search Soundcloud"></p>
+	<div id="search" class="load">Search</div><div id="favs" class="load">Favorites</div><div id="tracks" class="load">Tracks</div>
+	<p><label>Search  </label><input type="text" id="searchField" name="search" value="" placeholder="search Soundcloud"></p>
 	<ul id="searchlist"></ul>
 </div
 <!-- Templates -->

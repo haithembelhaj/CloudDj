@@ -4,6 +4,8 @@ SC.initialize
 	redirect_uri: "http://clouddj.herokuapp.com/static/callback.html"
 context = new webkitAudioContext()
 
+User = {} 
+
 filters = [
 	"static/impulse-responses/matrix-reverb3.wav"
 	"static/impulse-responses/echo.wav"
@@ -296,9 +298,11 @@ class searchList extends Spine.Controller
 
 	el: $('#search-container')
 
-	events: 
-		'keydown #search' : 'renderSearch'
-		'click #favorites' : 'renderFav'
+	events:
+		'keydown #searchField' : 'renderSearch'
+		'click #search' : 'renderSearch'
+		'click #favs' : 'renderFavs'
+		'click #tracks' : 'renderTracks'
 
 	elements:
 		'#searchlist' : 'searchlist'
@@ -312,8 +316,18 @@ class searchList extends Spine.Controller
 		SC.get '/tracks', q: @query.val(), (result)=>
 			for track in result[0..10]
 				@renderOne track
-	renderFav: ()->
+
+	renderFavs: ()->
 		@searchlist.empty()
+		SC.get '/me/favorites', (result)=>
+			for track in result[0..10]
+				@renderOne track
+
+	renderTracks: ()->
+		@searchlist.empty()
+		SC.get '/me/traks', (result)=>
+			for track in result[0..10]
+				@renderOne track
 
 	renderOne: (track)->
 		item = new searchItem(item : track)
@@ -349,6 +363,17 @@ crossfade = (element)->
 	gain2 = Math.cos((1.0 - x) * 0.5*Math.PI)
 	deckA.gainNode.gain.value = gain1;
 	deckB.gainNode.gain.value = gain2;
+
+#connection
+$('#connect.connect').click ()->
+	$(this).removeClass('connect').addClass('disconnect')
+	SC.connect ()->
+		SC.get '/me', (me)->
+			User = me
+		SC.get '/me/favorites', (favs)->
+			User.favs = favs
+		SC.get '/me/tracks', (tracks)->
+			User.tracks = tracks
 
 
 

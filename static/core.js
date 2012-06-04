@@ -1,4 +1,4 @@
-var APPID, Deck, Item, Playlist, Track, context, crossfade, deckA, deckB, filterBuffers, filters, getBuffer, playlist, searchItem, searchList, searchlist,
+var APPID, Deck, Item, Playlist, Track, User, context, crossfade, deckA, deckB, filterBuffers, filters, getBuffer, playlist, searchItem, searchList, searchlist,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -11,6 +11,8 @@ SC.initialize({
 });
 
 context = new webkitAudioContext();
+
+User = {};
 
 filters = ["static/impulse-responses/matrix-reverb3.wav", "static/impulse-responses/echo.wav", "static/impulse-responses/cosmic-ping-long.wav"];
 
@@ -407,8 +409,10 @@ searchList = (function(_super) {
   searchList.prototype.el = $('#search-container');
 
   searchList.prototype.events = {
-    'keydown #search': 'renderSearch',
-    'click #favorites': 'renderFav'
+    'keydown #searchField': 'renderSearch',
+    'click #search': 'renderSearch',
+    'click #favs': 'renderFavs',
+    'click #tracks': 'renderTracks'
   };
 
   searchList.prototype.elements = {
@@ -437,8 +441,34 @@ searchList = (function(_super) {
     });
   };
 
-  searchList.prototype.renderFav = function() {
-    return this.searchlist.empty();
+  searchList.prototype.renderFavs = function() {
+    var _this = this;
+    this.searchlist.empty();
+    return SC.get('/me/favorites', function(result) {
+      var track, _i, _len, _ref, _results;
+      _ref = result.slice(0, 11);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        track = _ref[_i];
+        _results.push(_this.renderOne(track));
+      }
+      return _results;
+    });
+  };
+
+  searchList.prototype.renderTracks = function() {
+    var _this = this;
+    this.searchlist.empty();
+    return SC.get('/me/traks', function(result) {
+      var track, _i, _len, _ref, _results;
+      _ref = result.slice(0, 11);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        track = _ref[_i];
+        _results.push(_this.renderOne(track));
+      }
+      return _results;
+    });
   };
 
   searchList.prototype.renderOne = function(track) {
@@ -502,3 +532,18 @@ crossfade = function(element) {
   deckA.gainNode.gain.value = gain1;
   return deckB.gainNode.gain.value = gain2;
 };
+
+$('#connect.connect').click(function() {
+  $(this).removeClass('connect').addClass('disconnect');
+  return SC.connect(function() {
+    SC.get('/me', function(me) {
+      return User = me;
+    });
+    SC.get('/me/favorites', function(favs) {
+      return User.favs = favs;
+    });
+    return SC.get('/me/tracks', function(tracks) {
+      return User.tracks = tracks;
+    });
+  });
+});
