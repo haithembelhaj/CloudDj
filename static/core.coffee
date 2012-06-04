@@ -320,11 +320,11 @@ class searchList extends Spine.Controller
 					@renderOne track
 		else if @tab is 'favs'
 			for track in User.favs
-				if track.user.username.indexOf(searchString) not -1 or track.title.indexOf(searchString) not -1
+				if track.user.username.indexOf(searchString) isnt -1 or track.title.indexOf(searchString) isnt -1
 					@renderOne track
 		else 
 			for track in User.tracks
-				if track.user.username.indexOf(searchString) not -1 or track.title.indexOf(searchString) not -1
+				if track.user.username.indexOf(searchString) isnt -1 or track.title.indexOf(searchString) isnt -1
 					@renderOne track
 
 	renderSearch: ()->
