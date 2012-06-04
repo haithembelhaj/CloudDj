@@ -420,7 +420,6 @@ Item = (function(_super) {
   Item.prototype.render = function() {
     var title;
     title = this.item.title || ("" + this.item.sc.user.username + " - " + this.item.sc.title);
-    console.log(this.item.cover);
     this.el.html($('#listItemTemplate').tmpl({
       src: this.item.cover,
       title: title
@@ -585,11 +584,12 @@ searchItem = (function(_super) {
   };
 
   searchItem.prototype.addToList = function() {
-    var track;
+    var cover, track;
+    cover = this.item.artwork_url || "/static/images/logo.png";
     track = Track.create({
-      sc: this.item
+      sc: this.item,
+      cover: cover
     });
-    track.cover = this.item.artwork_url || "/static/images/logo.png";
     return track.save();
   };
 

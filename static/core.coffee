@@ -298,7 +298,6 @@ class Item extends Spine.Controller
 
 	render: ->
 		title = @item.title or "#{@item.sc.user.username} - #{@item.sc.title}"
-		console.log @item.cover
 		@el.html $('#listItemTemplate').tmpl(src: @item.cover, title: title)
 		@
 
@@ -383,8 +382,8 @@ class searchItem extends Spine.Controller
 		@
 
 	addToList: ->
-		track = Track.create(sc : @item)
-		track.cover = @item.artwork_url or "/static/images/logo.png"
+		cover = @item.artwork_url or "/static/images/logo.png"
+		track = Track.create(sc : @item, cover : cover)
 		track.save()
 		#playlist.renderOne(sc : @item)
 
