@@ -588,7 +588,7 @@ searchItem = (function(_super) {
     track = Track.create({
       sc: this.item
     });
-    track.cover = this.item.sc.artwork_url || "/static/images/logo.png";
+    track.cover = this.item.artwork_url || "/static/images/logo.png";
     return track.save();
   };
 

@@ -383,7 +383,7 @@ class searchItem extends Spine.Controller
 
 	addToList: ->
 		track = Track.create(sc : @item)
-		track.cover = @item.sc.artwork_url or "/static/images/logo.png"
+		track.cover = @item.artwork_url or "/static/images/logo.png"
 		track.save()
 		#playlist.renderOne(sc : @item)
 
