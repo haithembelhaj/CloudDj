@@ -26,8 +26,9 @@ getBuffer = function(url, progress, callback) {
   request.onprogress = progress;
   request.onload = function() {
     var buffer;
-    buffer = context.createBuffer(request.response, false);
-    return callback(buffer);
+    return buffer = context.decodeAudioData(request.response, function(buffer) {
+      return callback(buffer);
+    });
   };
   return request.send();
 };
@@ -91,6 +92,7 @@ Deck = (function(_super) {
     var _this = this;
     Deck.__super__.constructor.apply(this, arguments);
     this.gainNode = context.createGainNode();
+    this.analyser = context.createAnalyser();
     this.convolver = context.createConvolver();
     this.convolverGain = context.createGainNode();
     this.convolverGain.gain.value = 0;
@@ -152,7 +154,8 @@ Deck = (function(_super) {
     if ((_ref = this.track) != null ? _ref.buffer : void 0) {
       this.source = context.createBufferSource();
       this.source.buffer = this.track.buffer;
-      this.source.connect(this.gainNode);
+      this.source.connect(this.analyser);
+      this.analyser.connect(this.gainNode);
       this.source.connect(this.convolver);
       this.convolverGain.connect(this.gainNode);
       this.gainNode.connect(context.destination);

@@ -20,8 +20,8 @@ getBuffer = (url, progress, callback)->
 	request.responseType = "arraybuffer"
 	request.onprogress = progress
 	request.onload = ()->
-		buffer = context.createBuffer request.response, false
-		callback buffer
+		buffer = context.decodeAudioData request.response, (buffer)->
+			callback buffer
 	request.send()
 
 do ()->
@@ -54,6 +54,7 @@ class Deck extends Spine.Controller
 	constructor: ->
 		super
 		@gainNode = context.createGainNode()
+		@analyser = context.createAnalyser()
 		@convolver = context.createConvolver()
 		@convolverGain = context.createGainNode()
 		@convolverGain.gain.value = 0
@@ -101,7 +102,8 @@ class Deck extends Spine.Controller
 		if @track?.buffer
 			@source = context.createBufferSource()
 			@source.buffer = @track.buffer
-			@source.connect @gainNode
+			@source.connect @analyser
+			@analyser.connect @gainNode
 			@source.connect @convolver
 			@convolverGain.connect @gainNode
 			@gainNode.connect context.destination
@@ -154,7 +156,6 @@ class Deck extends Spine.Controller
 		#cursor
 		@playerCtx.fillStyle = "rgba(0, 0, 255, 0.2)"
 		@playerCtx.fillRect 0, 0, px, 50
-
 
 	updateWave: (px)=>
 		wavePos = 225-px
