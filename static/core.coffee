@@ -363,19 +363,21 @@ crossfade = (element)->
 	deckB.gainNode.gain.value = gain2;
 
 #connection
-$('#connect.connect').click ()->
+$('body').on('#connect.connect').click ()->
 	$(this).removeClass('connect').addClass('disconnect')
 	$('#tabs').fadeIn()
 	SC.connect ()->
 		SC.get '/me', (me)->
 			User = me
+			$('#message').text "Welcome #{me.username}"
 		SC.get '/me/favorites', (favs)->
 			User.favs = favs
 		SC.get '/me/tracks', (tracks)->
 			User.tracks = tracks
 
-$('#connect.disconnect').click ()->
+$('body').on('#connect.disconnect').click ()->
 	$(this).removeClass('disconnect').addClass('connect')
+	$('#message').text ""
 	$('#tabs').fadeOut()
 	User = {}
 

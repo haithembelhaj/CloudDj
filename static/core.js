@@ -527,12 +527,13 @@ crossfade = function(element) {
   return deckB.gainNode.gain.value = gain2;
 };
 
-$('#connect.connect').click(function() {
+$('body').on('#connect.connect').click(function() {
   $(this).removeClass('connect').addClass('disconnect');
   $('#tabs').fadeIn();
   return SC.connect(function() {
     SC.get('/me', function(me) {
-      return User = me;
+      User = me;
+      return $('#message').text("Welcome " + me.username);
     });
     SC.get('/me/favorites', function(favs) {
       return User.favs = favs;
@@ -543,8 +544,9 @@ $('#connect.connect').click(function() {
   });
 });
 
-$('#connect.disconnect').click(function() {
+$('body').on('#connect.disconnect').click(function() {
   $(this).removeClass('disconnect').addClass('connect');
+  $('#message').text("");
   $('#tabs').fadeOut();
   return User = {};
 });
