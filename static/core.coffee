@@ -45,7 +45,7 @@ class Deck extends Spine.Controller
 		'click .player' : 'jumpTo'
 
 	elements:
-		'.tempo' : 'tempo'
+		'.tempo' : 'tempoRange'
 		'.player': 'player'
 		'.cover' : 'cover'
 		'.effect' : 'effect'
@@ -70,8 +70,6 @@ class Deck extends Spine.Controller
 		@track = track
 		@track.bind 'destroy', @unloadTrack
 		@source?.noteOff(0)
-		@wavePos = 225
-		@playerPos = 0
 		@el.addClass 'buffering'
 		@image.src = @track.sc.waveform_url
 		@cover.css 'background-image', "url(#{@track.sc.artwork_url})"
@@ -85,11 +83,11 @@ class Deck extends Spine.Controller
 					@wavePath =  @track.buffer.duration/3000
 					@track.save()
 					@el.removeClass 'buffering'
-					@drawCursor 0
 		else
 			@el.removeClass 'buffering'
 			@path = @track.buffer.duration/550
 			@wavePath =  @track.buffer.duration/3000
+			@drawCursor 0
 
 	unloadTrack: ()=>
 		@pause() if @playing
@@ -103,10 +101,8 @@ class Deck extends Spine.Controller
 		if @track?.buffer
 			@source = context.createBufferSource()
 			@source.buffer = @track.buffer
-			#@gainNode = context.createGainNode()
 			@source.connect @gainNode
 			@source.connect @convolver
-			#@convolver.connect @convolverGain
 			@convolverGain.connect @gainNode
 			@gainNode.connect context.destination
 			@track.startedAt = Date.now()
@@ -117,17 +113,17 @@ class Deck extends Spine.Controller
 				@track.pausedAt = 0
 				@source.noteOn(0)
 
-			@track.save()
 			@playing = true
 			@updateTempo()
+			@updateAnimations()
+			@track.save()
 
 	pause: ->
-		@track.pausedAt += (Date.now() - @track.startedAt) / 1000 
+		@track.pausedAt += (Date.now() - @track.startedAt) / 1000
 		@track.save()
 		@source.noteOff(0)
 		@playing = false
-		clearInterval @updater
-		clearInterval @waver
+		window.webkitCancelRequestAnimationFrame @animation
 
 	jumpTo: (e)->
 		if @playing
@@ -141,15 +137,10 @@ class Deck extends Spine.Controller
 		@updateWave @track.pausedAt/@wavePath
 
 	updateCursor: (px)=>
-		if px
-			@playerPos = px
-			@drawCursor @playerPos
-
-		if @playerPos >= 550
-			clearInterval @updater 
+		if px >= 550
+			window.webkitCancelRequestAnimationFrame @animation 
 		else
-			@playerPos++
-			@drawCursor @playerPos
+			@drawCursor px
 
 	drawCursor: (px)->
 		@playerCtx.clearRect 0, 0, 550, 50
@@ -166,25 +157,22 @@ class Deck extends Spine.Controller
 
 
 	updateWave: (px)=>
-		if px
-			@wavePos = 225-px
-			@drawWave @wavePos 
-		@wavePos--
-		if  @wavePos >= -2776
-			@drawWave @wavePos 
+		wavePos = 225-px
+		if  wavePos >= -2775
+			@drawWave wavePos 
 		else
-			clearInterval @waver
+			window.webkitCancelRequestAnimationFrame @animation
 
 	drawWave: (dx)->
-		@waveCtx.clearRect 0, 0, 3000, 99
+		@waveCtx.clearRect 0, 0, 450, 100
 		#wave
-		waveGradient = @waveCtx.createLinearGradient dx, 0, 3000+dx, 99
+		waveGradient = @waveCtx.createLinearGradient dx, 0, 3000+dx, 100
 		waveGradient.addColorStop 0, "#84d1f4"
 		waveGradient.addColorStop 0.5, "#2d74e5"
 		waveGradient.addColorStop 1, "#f24bef"
 		@waveCtx.fillStyle = waveGradient
-		@waveCtx.fillRect dx, 0, 3000, 99
-		@waveCtx.drawImage @image, dx, 0, 3000, 99
+		@waveCtx.fillRect 0, 0, 450, 100
+		@waveCtx.drawImage @image, dx, 0, 3000, 100
 		#the ruler
 		@waveCtx.beginPath()
 		@waveCtx.lineWidth = 1
@@ -197,18 +185,19 @@ class Deck extends Spine.Controller
 		@waveCtx.lineWidth = 2
 		@waveCtx.strokeStyle = "rgba(255, 0, 0, 0.5)"
 		@waveCtx.moveTo(225,0)
-		@waveCtx.lineTo(225,99)
+		@waveCtx.lineTo(225,100)
 		@waveCtx.stroke()
 
-	updateTempo: ->
-		val = ((@tempo.val()-50)/200) + 1
-		
-		@source.playbackRate.value = val
-		if @updater then clearInterval @updater
-		@updater = setInterval @updateCursor, (@path*1000)/val
+	updateAnimations: ()=>
+		@animation = window.webkitRequestAnimationFrame @updateAnimations
+		#render
+		@track.currentTime = (Date.now() - @track.startedAt)/1000 + @track.pausedAt
+		@updateWave Math.floor(@track.currentTime/@wavePath)
+		@updateCursor Math.floor(@track.currentTime/@path)
 
-		if @waver then clearInterval @waver
-		@waver = setInterval @updateWave, (@wavePath*1000)/val
+	updateTempo: ->
+		@tempo = ((@tempoRange.val()-50)/400) + 1
+		@source.playbackRate.value = @tempo
 
 
 	toggleFilter: (e)->
@@ -310,6 +299,7 @@ class searchList extends Spine.Controller
 
 	constructor : ->
 		super
+		@tab = 'sc'
 
 	search: ()->
 		@searchlist.empty()
