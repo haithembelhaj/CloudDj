@@ -442,33 +442,27 @@ searchList = (function(_super) {
   };
 
   searchList.prototype.renderFavs = function() {
-    var _this = this;
+    var track, _i, _len, _ref, _results;
     this.searchlist.empty();
-    return SC.get('/me/favorites', function(result) {
-      var track, _i, _len, _ref, _results;
-      _ref = result.slice(0, 11);
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        track = _ref[_i];
-        _results.push(_this.renderOne(track));
-      }
-      return _results;
-    });
+    _ref = User.favs;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      track = _ref[_i];
+      _results.push(this.renderOne(track));
+    }
+    return _results;
   };
 
   searchList.prototype.renderTracks = function() {
-    var _this = this;
+    var track, _i, _len, _ref, _results;
     this.searchlist.empty();
-    return SC.get('/me/traks', function(result) {
-      var track, _i, _len, _ref, _results;
-      _ref = result.slice(0, 11);
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        track = _ref[_i];
-        _results.push(_this.renderOne(track));
-      }
-      return _results;
-    });
+    _ref = User.tracks;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      track = _ref[_i];
+      _results.push(this.renderOne(track));
+    }
+    return _results;
   };
 
   searchList.prototype.renderOne = function(track) {
@@ -535,6 +529,7 @@ crossfade = function(element) {
 
 $('#connect.connect').click(function() {
   $(this).removeClass('connect').addClass('disconnect');
+  $('#tabs').fadeIn();
   return SC.connect(function() {
     SC.get('/me', function(me) {
       return User = me;
@@ -546,4 +541,10 @@ $('#connect.connect').click(function() {
       return User.tracks = tracks;
     });
   });
+});
+
+$('#connect.disconnect').click(function() {
+  $(this).removeClass('disconnect').addClass('connect');
+  $('#tabs').fadeOut();
+  return User = {};
 });

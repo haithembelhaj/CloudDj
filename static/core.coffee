@@ -319,15 +319,13 @@ class searchList extends Spine.Controller
 
 	renderFavs: ()->
 		@searchlist.empty()
-		SC.get '/me/favorites', (result)=>
-			for track in result[0..10]
-				@renderOne track
+		for track in User.favs
+			@renderOne track
 
 	renderTracks: ()->
 		@searchlist.empty()
-		SC.get '/me/traks', (result)=>
-			for track in result[0..10]
-				@renderOne track
+		for track in User.tracks
+			@renderOne track
 
 	renderOne: (track)->
 		item = new searchItem(item : track)
@@ -367,6 +365,7 @@ crossfade = (element)->
 #connection
 $('#connect.connect').click ()->
 	$(this).removeClass('connect').addClass('disconnect')
+	$('#tabs').fadeIn()
 	SC.connect ()->
 		SC.get '/me', (me)->
 			User = me
@@ -374,6 +373,11 @@ $('#connect.connect').click ()->
 			User.favs = favs
 		SC.get '/me/tracks', (tracks)->
 			User.tracks = tracks
+
+$('#connect.disconnect').click ()->
+	$(this).removeClass('disconnect').addClass('connect')
+	$('#tabs').fadeOut()
+	User = {}
 
 
 

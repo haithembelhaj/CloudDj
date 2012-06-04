@@ -304,6 +304,16 @@ h2{
 	margin-top: 10px;
 }
 
+#search-container #tabs{
+	display: none;
+}
+
+#search-container #tabs .load{
+	width: 200px;
+	margin-left: 20px;
+	float: left;
+}
+
 #search-container p{
 	text-align: center;
 }
@@ -312,7 +322,7 @@ h2{
 	font-size: 25px;
 }
 
-#search-container #search{
+#search-container #searchField{
 	width: 300px;
 	font-size: 20px;
 }
