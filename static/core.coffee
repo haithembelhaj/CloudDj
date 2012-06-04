@@ -298,6 +298,7 @@ class Item extends Spine.Controller
 
 	render: ->
 		title = @item.title or "#{@item.sc.user.username} - #{@item.sc.title}"
+		console.log @item.cover
 		@el.html $('#listItemTemplate').tmpl(src: @item.cover, title: title)
 		@
 

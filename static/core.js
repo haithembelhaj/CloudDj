@@ -420,6 +420,7 @@ Item = (function(_super) {
   Item.prototype.render = function() {
     var title;
     title = this.item.title || ("" + this.item.sc.user.username + " - " + this.item.sc.title);
+    console.log(this.item.cover);
     this.el.html($('#listItemTemplate').tmpl({
       src: this.item.cover,
       title: title
