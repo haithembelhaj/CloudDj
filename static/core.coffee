@@ -362,9 +362,9 @@ crossfade = (element)->
 	deckA.gainNode.gain.value = gain1;
 	deckB.gainNode.gain.value = gain2;
 
-#connection
-$('body').on('#connect.connect').click ()->
-	$(this).removeClass('connect').addClass('disconnect')
+#Connect to SoundCloud
+$('user').on('#connect.connect').click ()->
+	$('#connect').removeClass('connect').addClass('disconnect')
 	$('#tabs').fadeIn()
 	SC.connect ()->
 		SC.get '/me', (me)->
@@ -375,8 +375,8 @@ $('body').on('#connect.connect').click ()->
 		SC.get '/me/tracks', (tracks)->
 			User.tracks = tracks
 
-$('body').on('#connect.disconnect').click ()->
-	$(this).removeClass('disconnect').addClass('connect')
+$('user').on('#connect.disconnect').click ()->
+	$('#connect').removeClass('disconnect').addClass('connect')
 	$('#message').text ""
 	$('#tabs').fadeOut()
 	User = {}
