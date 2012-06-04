@@ -527,7 +527,7 @@ crossfade = function(element) {
   return deckB.gainNode.gain.value = gain2;
 };
 
-$('#user').on('.connect').click(function() {
+$('#user').on('click', '.connect', function() {
   $('#connect').removeClass('connect').addClass('disconnect');
   $('#tabs').fadeIn();
   return SC.connect(function() {
@@ -544,7 +544,7 @@ $('#user').on('.connect').click(function() {
   });
 });
 
-$('#user').on('.disconnect').click(function() {
+$('#user').on('click', '.disconnect', function() {
   $('#connect').removeClass('disconnect').addClass('connect');
   $('#message').text("");
   $('#tabs').fadeOut();
