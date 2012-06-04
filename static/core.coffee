@@ -299,30 +299,49 @@ class searchList extends Spine.Controller
 	el: $('#search-container')
 
 	events:
-		'keydown #searchField' : 'renderSearch'
+		'keydown #searchField' : 'search'
 		'click #search' : 'renderSearch'
 		'click #favs' : 'renderFavs'
 		'click #tracks' : 'renderTracks'
 
 	elements:
 		'#searchlist' : 'searchlist'
-		'#search' : 'query'
+		'#searchField' : 'query'
 
 	constructor : ->
 		super
 
+	search: ()->
+		@searchlist.empty()
+		searchString = @query.val()
+		if @tab = 'sc'
+			SC.get '/tracks', q: searchString, (result)=>
+				for track in result[0..10]
+					@renderOne track
+		else if @tab = 'favs'
+			for track in User.favs
+				if track.user.username.indexOf(searchString) not -1 or track.title.indexOf(searchString) not -1
+					@renderOne track
+		else 
+			for track in User.tracks
+				if track.user.username.indexOf(searchString) not -1 or track.title.indexOf(searchString) not -1
+					@renderOne track
+
 	renderSearch: ()->
 		@searchlist.empty()
-		SC.get '/tracks', q: @query.val(), (result)=>
-			for track in result[0..10]
-				@renderOne track
+		@tab = 'sc'
+		@query.attr 'placeholder', 'search Soundcloud'
 
 	renderFavs: ()->
+		@query.attr 'placeholder', 'search your favorites'
+		@tab = 'favs'
 		@searchlist.empty()
 		for track in User.favs
 			@renderOne track
 
 	renderTracks: ()->
+		@query.attr 'placeholder', 'search your tracks'
+		@tab = 'tracks'
 		@searchlist.empty()
 		for track in User.tracks
 			@renderOne track

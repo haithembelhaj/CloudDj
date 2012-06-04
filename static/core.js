@@ -409,7 +409,7 @@ searchList = (function(_super) {
   searchList.prototype.el = $('#search-container');
 
   searchList.prototype.events = {
-    'keydown #searchField': 'renderSearch',
+    'keydown #searchField': 'search',
     'click #search': 'renderSearch',
     'click #favs': 'renderFavs',
     'click #tracks': 'renderTracks'
@@ -417,32 +417,68 @@ searchList = (function(_super) {
 
   searchList.prototype.elements = {
     '#searchlist': 'searchlist',
-    '#search': 'query'
+    '#searchField': 'query'
   };
 
   function searchList() {
     searchList.__super__.constructor.apply(this, arguments);
   }
 
-  searchList.prototype.renderSearch = function() {
-    var _this = this;
+  searchList.prototype.search = function() {
+    var searchString, track, _i, _j, _len, _len2, _ref, _ref2, _results, _results2,
+      _this = this;
     this.searchlist.empty();
-    return SC.get('/tracks', {
-      q: this.query.val()
-    }, function(result) {
-      var track, _i, _len, _ref, _results;
-      _ref = result.slice(0, 11);
+    searchString = this.query.val();
+    if (this.tab = 'sc') {
+      return SC.get('/tracks', {
+        q: searchString
+      }, function(result) {
+        var track, _i, _len, _ref, _results;
+        _ref = result.slice(0, 11);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          track = _ref[_i];
+          _results.push(_this.renderOne(track));
+        }
+        return _results;
+      });
+    } else if (this.tab = 'favs') {
+      _ref = User.favs;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         track = _ref[_i];
-        _results.push(_this.renderOne(track));
+        if (track.user.username.indexOf(searchString)(!-1 || track.title.indexOf(searchString)(!-1))) {
+          _results.push(this.renderOne(track));
+        } else {
+          _results.push(void 0);
+        }
       }
       return _results;
-    });
+    } else {
+      _ref2 = User.tracks;
+      _results2 = [];
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        track = _ref2[_j];
+        if (track.user.username.indexOf(searchString)(!-1 || track.title.indexOf(searchString)(!-1))) {
+          _results2.push(this.renderOne(track));
+        } else {
+          _results2.push(void 0);
+        }
+      }
+      return _results2;
+    }
+  };
+
+  searchList.prototype.renderSearch = function() {
+    this.searchlist.empty();
+    this.tab = 'sc';
+    return this.query.attr('placeholder', 'search Soundcloud');
   };
 
   searchList.prototype.renderFavs = function() {
     var track, _i, _len, _ref, _results;
+    this.query.attr('placeholder', 'search your favorites');
+    this.tab = 'favs';
     this.searchlist.empty();
     _ref = User.favs;
     _results = [];
@@ -455,6 +491,8 @@ searchList = (function(_super) {
 
   searchList.prototype.renderTracks = function() {
     var track, _i, _len, _ref, _results;
+    this.query.attr('placeholder', 'search your tracks');
+    this.tab = 'tracks';
     this.searchlist.empty();
     _ref = User.tracks;
     _results = [];
