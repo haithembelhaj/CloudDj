@@ -429,7 +429,7 @@ searchList = (function(_super) {
       _this = this;
     this.searchlist.empty();
     searchString = this.query.val();
-    if (this.tab = 'sc') {
+    if (this.tab === 'sc') {
       return SC.get('/tracks', {
         q: searchString
       }, function(result) {
@@ -442,7 +442,7 @@ searchList = (function(_super) {
         }
         return _results;
       });
-    } else if (this.tab = 'favs') {
+    } else if (this.tab === 'favs') {
       _ref = User.favs;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
