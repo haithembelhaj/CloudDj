@@ -1,5 +1,7 @@
 APPID = '829b2b95de282fa7cf7297e7ab2960ed'
-SC.initialize client_id: APPID
+SC.initialize 
+	client_id: APPID
+	redirect_uri: "http://clouddj.herokuapp.com/static/callback.html"
 context = new webkitAudioContext()
 
 filters = [
@@ -295,7 +297,8 @@ class searchList extends Spine.Controller
 	el: $('#search-container')
 
 	events: 
-		'keydown #search' : 'render'
+		'keydown #search' : 'renderSearch'
+		'click #favorites' : 'renderFav'
 
 	elements:
 		'#searchlist' : 'searchlist'
@@ -304,11 +307,13 @@ class searchList extends Spine.Controller
 	constructor : ->
 		super
 
-	render: ()->
+	renderSearch: ()->
 		@searchlist.empty()
 		SC.get '/tracks', q: @query.val(), (result)=>
 			for track in result[0..10]
 				@renderOne track
+	renderFav: ()->
+		@searchlist.empty()
 
 	renderOne: (track)->
 		item = new searchItem(item : track)

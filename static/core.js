@@ -6,7 +6,8 @@ var APPID, Deck, Item, Playlist, Track, context, crossfade, deckA, deckB, filter
 APPID = '829b2b95de282fa7cf7297e7ab2960ed';
 
 SC.initialize({
-  client_id: APPID
+  client_id: APPID,
+  redirect_uri: "http://clouddj.herokuapp.com/static/callback.html"
 });
 
 context = new webkitAudioContext();
@@ -406,7 +407,8 @@ searchList = (function(_super) {
   searchList.prototype.el = $('#search-container');
 
   searchList.prototype.events = {
-    'keydown #search': 'render'
+    'keydown #search': 'renderSearch',
+    'click #favorites': 'renderFav'
   };
 
   searchList.prototype.elements = {
@@ -418,7 +420,7 @@ searchList = (function(_super) {
     searchList.__super__.constructor.apply(this, arguments);
   }
 
-  searchList.prototype.render = function() {
+  searchList.prototype.renderSearch = function() {
     var _this = this;
     this.searchlist.empty();
     return SC.get('/tracks', {
@@ -433,6 +435,10 @@ searchList = (function(_super) {
       }
       return _results;
     });
+  };
+
+  searchList.prototype.renderFav = function() {
+    return this.searchlist.empty();
   };
 
   searchList.prototype.renderOne = function(track) {
