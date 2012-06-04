@@ -313,18 +313,18 @@ class searchList extends Spine.Controller
 
 	search: ()->
 		@searchlist.empty()
-		searchString = @query.val()
+		searchString = @query.val().toLowerCase()
 		if @tab is 'sc'
 			SC.get '/tracks', q: searchString, (result)=>
 				for track in result[0..10]
 					@renderOne track
 		else if @tab is 'favs'
 			for track in User.favs
-				if track.user.username.indexOf(searchString) isnt -1 or track.title.indexOf(searchString) isnt -1
+				if track.user.username.toLowerCase().indexOf(searchString) isnt -1 or track.title.toLowerCase().indexOf(searchString) isnt -1
 					@renderOne track
 		else 
 			for track in User.tracks
-				if track.user.username.indexOf(searchString) isnt -1 or track.title.indexOf(searchString) isnt -1
+				if track.user.username.toLowerCase().indexOf(searchString) isnt -1 or track.title.toLowerCase().indexOf(searchString) isnt -1
 					@renderOne track
 
 	renderSearch: ()->

@@ -428,7 +428,7 @@ searchList = (function(_super) {
     var searchString, track, _i, _j, _len, _len2, _ref, _ref2, _results, _results2,
       _this = this;
     this.searchlist.empty();
-    searchString = this.query.val();
+    searchString = this.query.val().toLowerCase();
     if (this.tab === 'sc') {
       return SC.get('/tracks', {
         q: searchString
@@ -447,7 +447,7 @@ searchList = (function(_super) {
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         track = _ref[_i];
-        if (track.user.username.indexOf(searchString) !== -1 || track.title.indexOf(searchString) !== -1) {
+        if (track.user.username.toLowerCase().indexOf(searchString) !== -1 || track.title.toLowerCase().indexOf(searchString) !== -1) {
           _results.push(this.renderOne(track));
         } else {
           _results.push(void 0);
@@ -459,7 +459,7 @@ searchList = (function(_super) {
       _results2 = [];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         track = _ref2[_j];
-        if (track.user.username.indexOf(searchString) !== -1 || track.title.indexOf(searchString) !== -1) {
+        if (track.user.username.toLowerCase().indexOf(searchString) !== -1 || track.title.toLowerCase().indexOf(searchString) !== -1) {
           _results2.push(this.renderOne(track));
         } else {
           _results2.push(void 0);
