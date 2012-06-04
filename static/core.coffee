@@ -20,7 +20,7 @@ getBuffer = (url, progress, callback)->
 	request.responseType = "arraybuffer"
 	request.onprogress = progress
 	request.onload = ()->
-		buffer = context.decodeAudioData request.response, (buffer)->
+		context.decodeAudioData request.response, (buffer)->
 			callback buffer
 	request.send()
 
@@ -31,7 +31,7 @@ do ()->
 			(buffer)-> filterBuffers.push buffer
 
 class Track extends Spine.Model
-	@configure "Track", "sc", "buffer"
+	@configure "Track", "sc", "buffer", "title", "local", "cover"
 	@extend Spine.Model.Local
 
 
@@ -72,18 +72,27 @@ class Deck extends Spine.Controller
 		@track.bind 'destroy', @unloadTrack
 		@source?.noteOff(0)
 		@el.addClass 'buffering'
-		@image.src = @track.sc.waveform_url
-		@cover.css 'background-image', "url(#{@track.sc.artwork_url})"
+		@image.src = @track.sc?.waveform_url or '/static/images/waveform.png'
+		@cover.css 'background-image', "url(#{@track.cover})"
 		if not @track.buffer
-			url = track.sc.stream_url+"?client_id=#{APPID}"
-			getBuffer '/stream?url='+escape(url),
-				(ev) => @drawCursor ((ev.loaded/ev.total)*550),
-				(buffer)=>
+			if @track.local
+				context.decodeAudioData @track.data, (buffer)=>
 					@track.buffer = buffer
+					delete @track.data
 					@path = @track.buffer.duration/550
 					@wavePath =  @track.buffer.duration/3000
-					@track.save()
+					@track.save
 					@el.removeClass 'buffering'
+			else
+				url = track.sc.stream_url+"?client_id=#{APPID}"
+				getBuffer '/stream?url='+escape(url),
+					(ev) => @drawCursor ((ev.loaded/ev.total)*550),
+					(buffer)=>
+						@track.buffer = buffer
+						@path = @track.buffer.duration/550
+						@wavePath =  @track.buffer.duration/3000
+						@track.save()
+						@el.removeClass 'buffering'
 		else
 			@el.removeClass 'buffering'
 			@path = @track.buffer.duration/550
@@ -241,9 +250,10 @@ class Playlist extends Spine.Controller
 
 	render: =>
 		for track in Track.all()
-			track.buffer = ""
-			track.save()
-			@renderOne track
+			if not track.local
+				track.buffer = ""
+				track.save()
+				@renderOne track
 
 	renderOne: (track)=>
 		item = new Item(item : track)
@@ -253,8 +263,26 @@ class Playlist extends Spine.Controller
 		url = @$('#url').val()
 		$.get "http://api.soundcloud.com/resolve.json?url=#{url}&client_id=#{APPID}", (data)=>
 			track = Track.create(sc : data)
+			track.cover = data.sc.artwork_url or ''
 			track.save()
-			
+
+	loadFile: (e)->
+		e.stopPropagation()
+		e.preventDefault()
+		files = e.dataTransfer.files
+		tracks = []
+		reader = new FileReader()
+		reader.onload = (fileEvent)->
+			track = tracks.shift()
+			track.data = fileEvent.target.result
+			track.save
+
+		for file in files
+			console.log file.type
+			if file.type.slice(0,-4) is "audio"
+				track = Track.create(title : file.name.slice(0,-4), local : true, cover: "/static/images/logo.png")
+				tracks.push track
+				reader.readAsArrayBuffer file			
 
 class Item extends Spine.Controller
 
@@ -269,9 +297,8 @@ class Item extends Spine.Controller
 		super
 
 	render: ->
-		title = "#{@item.sc.user.username} - #{@item.sc.title}"
-		src = @item.sc.artwork_url
-		@el.html $('#listItemTemplate').tmpl(src: src, title: title)
+		title = @item.title or "#{@item.sc.user.username} - #{@item.sc.title}"
+		@el.html $('#listItemTemplate').tmpl(src: @item.cover, title: title)
 		@
 
 	loadA: ->
@@ -350,7 +377,7 @@ class searchItem extends Spine.Controller
 
 	render: ->
 		title = "#{@item.user.username} - #{@item.title}"
-		src = @item.artwork_url
+		src = @item.artwork_url or '/static/images/logo.png'
 		@el.html $('#searchItemTemplate').tmpl(src: src, title: title)
 		@
 
@@ -390,6 +417,15 @@ $('#user').on 'click', '.disconnect', ()->
 	$('#message').text ""
 	$('#tabs').fadeOut()
 	User = {}
+
+#drag and drop files
+document.addEventListener 'drop', playlist.loadFile, false
+document.addEventListener 'dragover',
+	(e)->
+		e.stopPropagation()
+		e.preventDefault()
+		false
+	,false
 
 
 

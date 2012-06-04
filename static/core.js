@@ -25,8 +25,7 @@ getBuffer = function(url, progress, callback) {
   request.responseType = "arraybuffer";
   request.onprogress = progress;
   request.onload = function() {
-    var buffer;
-    return buffer = context.decodeAudioData(request.response, function(buffer) {
+    return context.decodeAudioData(request.response, function(buffer) {
       return callback(buffer);
     });
   };
@@ -55,7 +54,7 @@ Track = (function(_super) {
     Track.__super__.constructor.apply(this, arguments);
   }
 
-  Track.configure("Track", "sc", "buffer");
+  Track.configure("Track", "sc", "buffer", "title", "local", "cover");
 
   Track.extend(Spine.Model.Local);
 
@@ -107,25 +106,36 @@ Deck = (function(_super) {
   }
 
   Deck.prototype.loadTrack = function(track) {
-    var url, _ref,
+    var url, _ref, _ref2,
       _this = this;
     this.track = track;
     this.track.bind('destroy', this.unloadTrack);
     if ((_ref = this.source) != null) _ref.noteOff(0);
     this.el.addClass('buffering');
-    this.image.src = this.track.sc.waveform_url;
-    this.cover.css('background-image', "url(" + this.track.sc.artwork_url + ")");
+    this.image.src = ((_ref2 = this.track.sc) != null ? _ref2.waveform_url : void 0) || '/static/images/waveform.png';
+    this.cover.css('background-image', "url(" + this.track.cover + ")");
     if (!this.track.buffer) {
-      url = track.sc.stream_url + ("?client_id=" + APPID);
-      return getBuffer('/stream?url=' + escape(url), function(ev) {
-        return _this.drawCursor((ev.loaded / ev.total) * 550);
-      }, function(buffer) {
-        _this.track.buffer = buffer;
-        _this.path = _this.track.buffer.duration / 550;
-        _this.wavePath = _this.track.buffer.duration / 3000;
-        _this.track.save();
-        return _this.el.removeClass('buffering');
-      });
+      if (this.track.local) {
+        return context.decodeAudioData(this.track.data, function(buffer) {
+          _this.track.buffer = buffer;
+          delete _this.track.data;
+          _this.path = _this.track.buffer.duration / 550;
+          _this.wavePath = _this.track.buffer.duration / 3000;
+          _this.track.save;
+          return _this.el.removeClass('buffering');
+        });
+      } else {
+        url = track.sc.stream_url + ("?client_id=" + APPID);
+        return getBuffer('/stream?url=' + escape(url), function(ev) {
+          return _this.drawCursor((ev.loaded / ev.total) * 550);
+        }, function(buffer) {
+          _this.track.buffer = buffer;
+          _this.path = _this.track.buffer.duration / 550;
+          _this.wavePath = _this.track.buffer.duration / 3000;
+          _this.track.save();
+          return _this.el.removeClass('buffering');
+        });
+      }
     } else {
       this.el.removeClass('buffering');
       this.path = this.track.buffer.duration / 550;
@@ -322,9 +332,13 @@ Playlist = (function(_super) {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       track = _ref[_i];
-      track.buffer = "";
-      track.save();
-      _results.push(this.renderOne(track));
+      if (!track.local) {
+        track.buffer = "";
+        track.save();
+        _results.push(this.renderOne(track));
+      } else {
+        _results.push(void 0);
+      }
     }
     return _results;
   };
@@ -346,8 +360,41 @@ Playlist = (function(_super) {
       track = Track.create({
         sc: data
       });
+      track.cover = data.sc.artwork_url || '';
       return track.save();
     });
+  };
+
+  Playlist.prototype.loadFile = function(e) {
+    var file, files, reader, track, tracks, _i, _len, _results;
+    e.stopPropagation();
+    e.preventDefault();
+    files = e.dataTransfer.files;
+    tracks = [];
+    reader = new FileReader();
+    reader.onload = function(fileEvent) {
+      var track;
+      track = tracks.shift();
+      track.data = fileEvent.target.result;
+      return track.save;
+    };
+    _results = [];
+    for (_i = 0, _len = files.length; _i < _len; _i++) {
+      file = files[_i];
+      console.log(file.type);
+      if (file.type.slice(0, -4) === "audio") {
+        track = Track.create({
+          title: file.name.slice(0, -4),
+          local: true,
+          cover: "/static/images/logo.png"
+        });
+        tracks.push(track);
+        _results.push(reader.readAsArrayBuffer(file));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
   };
 
   return Playlist;
@@ -371,11 +418,10 @@ Item = (function(_super) {
   }
 
   Item.prototype.render = function() {
-    var src, title;
-    title = "" + this.item.sc.user.username + " - " + this.item.sc.title;
-    src = this.item.sc.artwork_url;
+    var title;
+    title = this.item.title || ("" + this.item.sc.user.username + " - " + this.item.sc.title);
     this.el.html($('#listItemTemplate').tmpl({
-      src: src,
+      src: this.item.cover,
       title: title
     }));
     return this;
@@ -529,7 +575,7 @@ searchItem = (function(_super) {
   searchItem.prototype.render = function() {
     var src, title;
     title = "" + this.item.user.username + " - " + this.item.title;
-    src = this.item.artwork_url;
+    src = this.item.artwork_url || '/static/images/logo.png';
     this.el.html($('#searchItemTemplate').tmpl({
       src: src,
       title: title
@@ -585,3 +631,11 @@ $('#user').on('click', '.disconnect', function() {
   $('#tabs').fadeOut();
   return User = {};
 });
+
+document.addEventListener('drop', playlist.loadFile, false);
+
+document.addEventListener('dragover', function(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  return false;
+}, false);
