@@ -1,4 +1,4 @@
-var APPID, Deck, Item, Playlist, Track, User, context, crossfade, deckA, deckB, filterBuffers, filters, getBuffer, playlist, searchItem, searchList, searchlist,
+var APPID, DATA, Deck, Item, Playlist, SAMPLE_RATE, SAMPLE_SIZE, Track, User, context, crossfade, deckA, deckB, filterBuffers, filters, float32Concat, getBuffer, playlist, searchItem, searchList, searchlist,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -12,7 +12,22 @@ SC.initialize({
 
 context = new webkitAudioContext();
 
+DATA = false;
+
+SAMPLE_SIZE = 2048;
+
+SAMPLE_RATE = 44100;
+
 User = {};
+
+float32Concat = function(first, second) {
+  var length, result;
+  length = first.length;
+  result = new Float32Array(length + 1024);
+  result.set(first);
+  result.set(second, length);
+  return result;
+};
 
 filters = ["static/impulse-responses/matrix-reverb3.wav", "static/impulse-responses/echo.wav", "static/impulse-responses/cosmic-ping-long.wav"];
 
@@ -86,18 +101,29 @@ Deck = (function(_super) {
     this.updateAnimations = __bind(this.updateAnimations, this);
     this.updateWave = __bind(this.updateWave, this);
     this.updateCursor = __bind(this.updateCursor, this);
+    this.updateNode = __bind(this.updateNode, this);
     this.unloadTrack = __bind(this.unloadTrack, this);
     this.loadTrack = __bind(this.loadTrack, this);
     var _this = this;
     Deck.__super__.constructor.apply(this, arguments);
+    this.threshold = 0.3;
+    this.currentThreshold = 0.3;
+    this.decay = 0.02;
     this.gainNode = context.createGainNode();
     this.analyser = context.createAnalyser();
+    this.jsNode = context.createJavaScriptNode(SAMPLE_SIZE / 2, 1, 1);
+    this.jsNode.onaudioprocess = function(e) {
+      return _this.updateNode(e);
+    };
+    this.fft = new FFT(SAMPLE_SIZE / 2, SAMPLE_RATE);
+    this.signal = new Float32Array(SAMPLE_SIZE / 2);
     this.convolver = context.createConvolver();
     this.convolverGain = context.createGainNode();
     this.convolverGain.gain.value = 0;
     this.playing = false;
     this.waveCtx = this.waveform[0].getContext('2d');
     this.playerCtx = this.player[0].getContext('2d');
+    this.spectrumCtx = $('#spectrum')[0].getContext('2d');
     this.image = new Image();
     this.image.onload = function() {
       _this.drawWave(225);
@@ -146,7 +172,7 @@ Deck = (function(_super) {
 
   Deck.prototype.unloadTrack = function() {
     if (this.playing) this.pause();
-    this.track = '';
+    delete this.track;
     return this.drawCursor(0);
   };
 
@@ -166,6 +192,8 @@ Deck = (function(_super) {
       this.source.buffer = this.track.buffer;
       this.source.connect(this.analyser);
       this.analyser.connect(this.gainNode);
+      this.source.connect(this.jsNode);
+      this.jsNode.connect(context.destination);
       this.source.connect(this.convolver);
       this.convolverGain.connect(this.gainNode);
       this.gainNode.connect(context.destination);
@@ -202,6 +230,72 @@ Deck = (function(_super) {
     this.track.save();
     this.updateCursor(e.offsetX);
     return this.updateWave(this.track.pausedAt / this.wavePath);
+  };
+
+  Deck.prototype.updateNode = function(e) {
+    var bufferL, bufferR, i;
+    if (!this.playing) {
+      return false;
+    } else {
+      bufferL = e.inputBuffer.getChannelData(0);
+      bufferR = e.inputBuffer.getChannelData(1);
+      this.signal = (function() {
+        var _ref, _results;
+        _results = [];
+        for (i = 0, _ref = (SAMPLE_SIZE / 2) - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+          _results.push((bufferL[i] + bufferR[i]) / 2);
+        }
+        return _results;
+      })();
+      this.fft.forward(this.signal);
+      if (!DATA) {
+        DATA = bufferL;
+      } else {
+        DATA = float32Concat(DATA, bufferL);
+      }
+      this.updateSpectrum();
+      return this.detectBeat();
+    }
+  };
+
+  Deck.prototype.detectBeat = function() {
+    var i, magnitude;
+    magnitude = 0;
+    for (i = 0; i <= 10; i++) {
+      if (this.fft.spectrum[i] > magnitude) magnitude = this.fft.spectrum[i];
+    }
+    if (magnitude >= this.threshold && magnitude >= this.currentThreshold) {
+      this.currentThreshold = magnitude;
+      return this.countBeats();
+    } else {
+      return this.currentThreshold -= this.decay;
+    }
+  };
+
+  Deck.prototype.countBeats = function() {
+    var now;
+    now = Date.now();
+    if (!this.firstBeat) {
+      this.firstBeat = now;
+      this.beats = 1;
+    } else {
+      this.beats++;
+    }
+    if (this.beats > 40) {
+      this.bpm = (this.beats * 60000) / ((now - this.firstBeat) * 4);
+      return console.log(this.bpm);
+    }
+  };
+
+  Deck.prototype.updateSpectrum = function() {
+    var i, _results;
+    this.spectrumCtx.clearRect(0, 0, 256, 50);
+    this.spectrumCtx.fillStyle = "black";
+    _results = [];
+    for (i = 0; i <= 256; i++) {
+      _results.push(this.spectrumCtx.fillRect(i, 50, 1, -this.fft.spectrum[i] * 50));
+    }
+    return _results;
   };
 
   Deck.prototype.updateCursor = function(px) {
@@ -381,7 +475,6 @@ Playlist = (function(_super) {
     _results = [];
     for (_i = 0, _len = files.length; _i < _len; _i++) {
       file = files[_i];
-      console.log(file.type);
       if (file.type.slice(0, -4) === "audio") {
         track = Track.create({
           title: file.name.slice(0, -4),
@@ -420,7 +513,6 @@ Item = (function(_super) {
   Item.prototype.render = function() {
     var title;
     title = this.item.title || ("" + this.item.sc.user.username + " - " + this.item.sc.title);
-    console.log(this.item.cover);
     this.el.html($('#listItemTemplate').tmpl({
       src: this.item.cover,
       title: title
