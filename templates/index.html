@@ -9,6 +9,7 @@
 </head>
 <body>
 <div id="user"><div id="connect" class="connect"></div><p id="message"></p></div>
+<canvas id="spectrum" height="50" width="256"></canvas>
 <div id="decks">
 	<div id="deck-a" class="deck">
 		<input type="range" class="tempo" min="0" max="100" value="50"></input>
@@ -62,6 +63,8 @@
 </script>
 
 <!-- Application scripts-->
+<script src="static/fft.js"></script>
+<script src="static/riffwave.js"></script>
 <script src="static/spine.js"></script>
 <script src="static/local.js"></script>
 <script src="{{ url_for('static', filename='core.js') }}"></script>

@@ -4,7 +4,19 @@ SC.initialize
 	redirect_uri: "http://clouddj.herokuapp.com/static/callback.html"
 context = new webkitAudioContext()
 
+DATA = false
+
+SAMPLE_SIZE = 2048
+SAMPLE_RATE = 44100
 User = {} 
+
+float32Concat = (first, second)->
+	length = first.length
+	result = new Float32Array(length+1024)
+	result.set first
+	result.set second, length
+	result
+
 
 filters = [
 	"static/impulse-responses/matrix-reverb3.wav"
@@ -53,8 +65,21 @@ class Deck extends Spine.Controller
 
 	constructor: ->
 		super
+		##Beat detector
+		@threshold = 0.3
+		@currentThreshold = 0.3
+		@decay = 0.02
+		##nodes
 		@gainNode = context.createGainNode()
+		##Analyser
 		@analyser = context.createAnalyser()
+		##FFT
+		@jsNode = context.createJavaScriptNode SAMPLE_SIZE/2, 1, 1
+		@jsNode.onaudioprocess = (e)=>
+			@updateNode e
+		@fft = new FFT SAMPLE_SIZE/2, SAMPLE_RATE
+		@signal = new Float32Array SAMPLE_SIZE/2
+		##Convolver
 		@convolver = context.createConvolver()
 		@convolverGain = context.createGainNode()
 		@convolverGain.gain.value = 0
@@ -62,6 +87,7 @@ class Deck extends Spine.Controller
 		##canvas stuff
 		@waveCtx = @waveform[0].getContext('2d')
 		@playerCtx = @player[0].getContext('2d')
+		@spectrumCtx = $('#spectrum')[0].getContext('2d')
 		@image = new Image()
 		@image.onload = ()=> 
 			@drawWave 225
@@ -101,7 +127,7 @@ class Deck extends Spine.Controller
 
 	unloadTrack: ()=>
 		@pause() if @playing
-		@track = ''
+		delete @track
 		@drawCursor 0
 
 	togglePlay: ()->
@@ -113,6 +139,8 @@ class Deck extends Spine.Controller
 			@source.buffer = @track.buffer
 			@source.connect @analyser
 			@analyser.connect @gainNode
+			@source.connect @jsNode
+			@jsNode.connect context.destination
 			@source.connect @convolver
 			@convolverGain.connect @gainNode
 			@gainNode.connect context.destination
@@ -146,6 +174,50 @@ class Deck extends Spine.Controller
 		@track.save()
 		@updateCursor e.offsetX
 		@updateWave @track.pausedAt/@wavePath
+
+	updateNode: (e)=>
+		if !@playing 
+			false
+		else 
+			bufferL = e.inputBuffer.getChannelData 0
+			bufferR = e.inputBuffer.getChannelData 1 
+			@signal = ((bufferL[i] + bufferR[i])/2 for i in [0..(SAMPLE_SIZE/2)-1])
+			@fft.forward @signal
+			if not DATA
+				DATA = bufferL
+			else
+				DATA = float32Concat DATA, bufferL
+			@updateSpectrum()
+			@detectBeat()
+
+	detectBeat: ()->
+		magnitude = 0
+		for i in [0..10]
+			if @fft.spectrum[i] > magnitude then magnitude = @fft.spectrum[i]
+		if magnitude >= @threshold and magnitude >= @currentThreshold
+			@currentThreshold = magnitude
+			#BEAT detected
+			@countBeats()
+		else
+			#DECAY detected
+			@currentThreshold -= @decay
+
+	countBeats: ()->
+		now = Date.now()
+		if not @firstBeat
+			@firstBeat = now
+			@beats = 1
+		else 
+			@beats++
+
+		if @beats > 40
+			@bpm = (@beats *60000)/ ((now - @firstBeat )* 4)
+			console.log @bpm
+
+	updateSpectrum: ()->
+		@spectrumCtx.clearRect 0, 0, 256, 50
+		@spectrumCtx.fillStyle = "black"
+		@spectrumCtx.fillRect(i, 50, 1, -@fft.spectrum[i]*50) for i in [0..256]
 
 	updateCursor: (px)=>
 		if px >= 550
@@ -278,7 +350,6 @@ class Playlist extends Spine.Controller
 			track.save
 
 		for file in files
-			console.log file.type
 			if file.type.slice(0,-4) is "audio"
 				track = Track.create(title : file.name.slice(0,-4), local : true, cover: "/static/images/logo.png")
 				tracks.push track
@@ -298,7 +369,6 @@ class Item extends Spine.Controller
 
 	render: ->
 		title = @item.title or "#{@item.sc.user.username} - #{@item.sc.title}"
-		console.log @item.cover
 		@el.html $('#listItemTemplate').tmpl(src: @item.cover, title: title)
 		@
 
