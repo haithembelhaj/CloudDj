@@ -253,8 +253,7 @@ Deck = (function(_super) {
       } else {
         DATA = float32Concat(DATA, bufferL);
       }
-      this.updateSpectrum();
-      return this.detectBeat();
+      return this.updateSpectrum();
     }
   };
 

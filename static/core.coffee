@@ -188,7 +188,7 @@ class Deck extends Spine.Controller
 			else
 				DATA = float32Concat DATA, bufferL
 			@updateSpectrum()
-			@detectBeat()
+			#@detectBeat()
 
 	detectBeat: ()->
 		magnitude = 0
