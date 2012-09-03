@@ -1,0 +1,744 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"curre",
+				"currentTime"
+			],
+			[
+				"beatde",
+				"beatdetector"
+			],
+			[
+				"Be",
+				"Beat"
+			],
+			[
+				"Ca",
+				"Campaign"
+			],
+			[
+				"def",
+				"default"
+			],
+			[
+				"ab",
+				"absolute"
+			],
+			[
+				"text",
+				"text-align"
+			],
+			[
+				"border",
+				"border-top"
+			],
+			[
+				"da",
+				"dashed"
+			],
+			[
+				"back",
+				"background-color"
+			],
+			[
+				"ar",
+				"array"
+			],
+			[
+				"Ema",
+				"EmailEvents  (class)"
+			],
+			[
+				"list-s",
+				"list-style"
+			],
+			[
+				"flo",
+				"Float32Array"
+			],
+			[
+				"F",
+				"Float32Array"
+			],
+			[
+				"Arr",
+				"Float32Array"
+			],
+			[
+				"con",
+				"convolver"
+			],
+			[
+				"in",
+				"inline-block"
+			],
+			[
+				"link",
+				"link	link - stylesheet"
+			],
+			[
+				"exte",
+				"ExtendedForm"
+			],
+			[
+				"set",
+				"setInterval();"
+			],
+			[
+				"compile",
+				"compiledSource"
+			],
+			[
+				"functio",
+				"create_function"
+			],
+			[
+				"App",
+				"AppHelper  (class)"
+			],
+			[
+				"P",
+				"Projects"
+			],
+			[
+				"a",
+				"a	<a>"
+			],
+			[
+				"render",
+				"renderHelper"
+			],
+			[
+				"re",
+				"replace"
+			],
+			[
+				"base",
+				"base	<base>"
+			],
+			[
+				"add",
+				"addScript"
+			],
+			[
+				"wi",
+				"window"
+			],
+			[
+				"rand",
+				"randRange"
+			],
+			[
+				"pro",
+				"processFrame"
+			],
+			[
+				"tile",
+				"tileHeight"
+			],
+			[
+				"pre",
+				"processFrame"
+			],
+			[
+				"pr",
+				"processFrame"
+			],
+			[
+				"he",
+				"height"
+			],
+			[
+				"copy",
+				"copyCanvas"
+			],
+			[
+				"acti",
+				"active_campaigns"
+			],
+			[
+				"New",
+				"NewsLetter"
+			],
+			[
+				"campai",
+				"Campaign"
+			],
+			[
+				"qu",
+				"query"
+			],
+			[
+				"S",
+				"Subscriber"
+			],
+			[
+				"size",
+				"sizeof"
+			],
+			[
+				"subs",
+				"subscriber"
+			],
+			[
+				"str_re",
+				"str_replace"
+			],
+			[
+				"p",
+				"p	<p>"
+			],
+			[
+				"do",
+				"document"
+			],
+			[
+				"no",
+				"no-repeat"
+			],
+			[
+				"font-",
+				"font-size"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "templates/index.html",
+			"settings":
+			{
+				"buffer_size": 3552,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/controller/Deck.coffee",
+			"settings":
+			{
+				"buffer_size": 7219,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "static/style.css",
+			"settings":
+			{
+				"buffer_size": 5159,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/CoffeeScript/CoffeeScript.sublime-build",
+	"command_palette":
+	{
+		"height": 137.0,
+		"selected_items":
+		[
+			[
+				"align",
+				"Preferences: Alignment Key Bindings – Default"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"MAR",
+				"Markdown Preview: current file in Sublime Text"
+			],
+			[
+				"mar",
+				"Markdown Preview: current file in browser"
+			],
+			[
+				"ma",
+				"Markdown Preview: current file in browser"
+			],
+			[
+				"Package Control: ",
+				"Package Control: List Packages"
+			],
+			[
+				"INST",
+				"Package Control: Install Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"pack",
+				"Package Control: Install Package"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"php",
+				"Format: Php"
+			],
+			[
+				"mat",
+				"Markdown Preview: current file in Sublime Text"
+			],
+			[
+				"mark",
+				"Markdown Preview: current file in browser"
+			],
+			[
+				"PA",
+				"Package Control: Install Package"
+			],
+			[
+				"pa",
+				"Package Control: Install Package"
+			],
+			[
+				"packa",
+				"Package Control: Install Package"
+			],
+			[
+				"package Control ",
+				"Package Control: Disable Package"
+			]
+		],
+		"width": 705.0
+	},
+	"console":
+	{
+		"height": 122.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/haithembelhaj/Dev/CloudDj/src/controller/Playlist.coffee",
+		"/Users/haithembelhaj/Library/Application Support/Sublime Text 2/Packages/CoffeeScript/CoffeeScript.sublime-build",
+		"/Users/haithembelhaj/Dev/CloudDj/src/core.coffee",
+		"/Users/haithembelhaj/Dev/CloudDj/Cakefile",
+		"/Users/haithembelhaj/Dev/CloudDj/server.py",
+		"/Users/haithembelhaj/Dev/CloudDj/static/lib/controller/Deck.js",
+		"/Users/haithembelhaj/Dev/CloudDj/static/beatdetector.js",
+		"/Users/haithembelhaj/Dev/CloudDj/src/controllers/Searchlist.coffee",
+		"/Users/haithembelhaj/Dev/CloudDj/src/controllers/Playlist.coffee",
+		"/Users/haithembelhaj/Dev/CloudDj/src/models/Track.coffee",
+		"/Users/haithembelhaj/Dev/CloudDj/src/controllers/Deck.coffee",
+		"/Users/haithembelhaj/Dev/CloudDj/src/soundcloud.coffee",
+		"/Users/haithembelhaj/Dev/CloudDj/src/helper/soundcloud.coffee",
+		"/Users/haithembelhaj/Dev/CloudDj/src/helpers/audio.coffee",
+		"/Users/haithembelhaj/Dev/CloudDj/static/core.coffee",
+		"/Users/haithembelhaj/Dev/CloudDj/static/fft.js",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/Controller/NewslettersController.php",
+		"/Users/haithembelhaj/Dev/kongress/app/View/Ware/manager_index.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/webroot/css/style.css",
+		"/Users/haithembelhaj/Dev/kongress/app/View/Elements/social.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/View/Subscribers/ajax_failed.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/View/Subscribers/ajax_success.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/Controller/SubscribersController.php",
+		"/Users/haithembelhaj/Dev/kongress/app/View/Posts/view.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/View/Posts/index.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/View/Layouts/default.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/Model/Subscriber.php",
+		"/Users/haithembelhaj/Library/Application Support/Sublime Text 2/Packages/Alignment/Default (OSX).sublime-keymap",
+		"/Users/haithembelhaj/Dev/kongress/app/Controller/AppController.php",
+		"/Users/haithembelhaj/Library/Application Support/Sublime Text 2/Packages/Nodejs/Nodejs.sublime-settings",
+		"/Users/haithembelhaj/Dev/kongress/app/View/Pages/anfahrt.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/Config/routes.php",
+		"/Users/haithembelhaj/Dev/kongress/app/View/Users/manager_dashboard.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/Controller/UsersController.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/View/Newsletters/manager_dashboard.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/Controller/PagesController.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/View/Newsletters/manager_view.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/View/Newsletters/manager_add.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/Controller/WareController.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Controller/Component/UploadfileComponent.php",
+		"/Users/haithembelhaj/Dev/kongress/app/View/Emails/html/newsletter/info.ctp",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/Controller/NewsletterAppController.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Config/email.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/Model/Newsletter.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Config/kongress.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Newsletter/Model/Campaign.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Model/User.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Config/database.php",
+		"/Users/haithembelhaj/Dev/kongress/app/tmp/newsletter_init.lock",
+		"/Users/haithembelhaj/Dev/kongress/app/Plugin/Mongodb/Model/Datasource/MongodbSource.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Config/bootstrap.php",
+		"/Users/haithembelhaj/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/Users/haithembelhaj/Library/Application Support/Sublime Text 2/Packages/ZenCoding/Default.sublime-keymap",
+		"/Users/haithembelhaj/Dev/cakephp/lib/Cake/Controller/Controller.php",
+		"/Users/haithembelhaj/Dev/kongress/app/Lib/EmailEvents.php",
+		"/Users/haithembelhaj/Dev/cakephp/lib/Cake/Controller/Component/AuthComponent.php",
+		"/Users/haithembelhaj/Dev/ARServer/templates/index.html",
+		"/Users/haithembelhaj/Dev/ARServer/server.py",
+		"/Volumes/Untitled/opencv/samples/python2/feature_homography.py",
+		"/Volumes/Data/Dev/Bachelor AR/haithem_abdallah/code/simpleAR-multi-threaded/simpleAR/main.cpp",
+		"/Users/haithembelhaj/Dev/ARServer/test.png",
+		"/Users/haithembelhaj/Dev/Lattee/css/lattee.css",
+		"/Users/haithembelhaj/Dev/cloudDj/requirement.txt",
+		"/Users/haithembelhaj/Dev/cloudDj/.git/index",
+		"/Users/haithembelhaj/Dev/cloudDj/static/core.js",
+		"/Users/haithembelhaj/Dev/cloudDj/core.coffee",
+		"/Users/haithembelhaj/Dev/cloudDj/index.html",
+		"/Users/haithembelhaj/Dev/roadbees/app/webroot/js/libs/routerjs/Router.js",
+		"/Users/haithembelhaj/Dev/RouterJs/Router.coffee",
+		"/Users/haithembelhaj/Dev/roadbees/app/Config/asset_compress.ini",
+		"/Users/haithembelhaj/Dev/roadbees/app/webroot/css/views/todos.index.css",
+		"/Users/haithembelhaj/Dev/roadbees/app/webroot/js/script.js",
+		"/Users/haithembelhaj/Dev/roadbees/app/webroot/js/roadbeesRouter.js",
+		"/Users/haithembelhaj/Dev/roadbees/app/View/Layouts/app.ctp",
+		"/Users/haithembelhaj/Dev/roadbees/app/Model/Contact.php",
+		"/Users/haithembelhaj/Dev/roadbees/app/Controller/AccountsController.php",
+		"/Users/haithembelhaj/Dev/roadbees/app/webroot/js/libs/jeame/jaimejs.js",
+		"/Users/haithembelhaj/Dev/roadbees/app/webroot/js/libs/historyjs/jquery.history.js",
+		"/Users/haithembelhaj/Dev/RouterJs/Router.js",
+		"/Users/haithembelhaj/Dev/roadbees/app/View/Contacts/detail.ctp",
+		"/Users/haithembelhaj/Dev/Lattee/coffee/lattee.js",
+		"/Users/haithembelhaj/Dev/Lattee/coffee/lattee.coffee",
+		"/Users/haithembelhaj/Dev/Lattee/index.html",
+		"/Users/haithembelhaj/Dev/coffeeConsoleRepl/src/coffee-script.js",
+		"/Users/haithembelhaj/Dev/roadbees/app/Controller/ContactsController.php",
+		"/Users/haithembelhaj/Library/Application Support/Sublime Text 2/Packages/DocBlockr/Base File.sublime-settings",
+		"/Users/haithembelhaj/Library/Application Support/Sublime Text 2/Packages/User/Base File.sublime-settings",
+		"/Users/haithembelhaj/Dev/roadbees/app/webroot/css/app.css",
+		"/Users/haithembelhaj/Dev/cakephp/README",
+		"/Users/haithembelhaj/Dev/roadbees/index.php",
+		"/Users/haithembelhaj/Dev/roadbees/app/webroot/css/style.css",
+		"/Volumes/Data/Dev/Bachelor AR/SimpleAR/SimpleAR.csproj",
+		"/Volumes/Data/Dev/Bachelor AR/SimpleAR/Program.cs",
+		"/Users/haithembelhaj/Dev/RouterJs/README.md",
+		"/Users/haithembelhaj/Dev/RouterJs/index.html",
+		"/Users/haithembelhaj/Dev/RouterJs/test.html",
+		"/Users/haithembelhaj/Dev/experimental/gitRaw.coffee",
+		"/Users/haithembelhaj/Dev/haithembelhaj.github.com/js/app.js",
+		"/Users/haithembelhaj/Dev/heroku/public/css/style.css",
+		"/Users/haithembelhaj/Dev/haithembelhaj.github.com/css/style.css",
+		"/Users/haithembelhaj/Dev/heroku/public/js/core.js",
+		"/Users/haithembelhaj/Dev/haithembelhaj.github.com/css/solarized_light.css",
+		"/Users/haithembelhaj/Dev/haithembelhaj.github.com/css/sytle.css",
+		"/Users/haithembelhaj/Dev/haithembelhaj.github.com/libs/Markdown.Converter.js",
+		"/Users/haithembelhaj/Dev/bloghub/models/posts.json",
+		"/Users/haithembelhaj/Dev/Routerjs/test.html",
+		"/Users/haithembelhaj/Dev/Routerjs/Router.js",
+		"/Users/haithembelhaj/Dev/Routerjs/Router.coffee",
+		"/Users/haithembelhaj/Dev/Routerjs/router.js",
+		"/Users/haithembelhaj/Dev/Routerjs/router.coffee",
+		"/Users/haithembelhaj/Dev/haithembelhaj.github.com/js/app.coffee",
+		"/Users/haithembelhaj/Dev/haithembelhaj.github.com/index.html",
+		"/Users/haithembelhaj/Dev/haithembelhaj.github.com/js/router.js",
+		"/Users/haithembelhaj/Dev/haithembelhaj.github.com/js/history.js",
+		"/Users/haithembelhaj/Dev/haithembelhaj.github.com/js/router.coffee",
+		"/Users/haithembelhaj/Downloads/balupton-history.js-de8554b/scripts/uncompressed/history.js",
+		"/Users/haithembelhaj/Downloads/balupton-history.js-de8554b/scripts/uncompressed/history.adapter.jquery.js",
+		"/Users/haithembelhaj/Dev/bloghub/bloghub.py",
+		"/Users/haithembelhaj/Dev/experimental/explodeHtml/explode.coffee",
+		"/Users/haithembelhaj/Dev/github-blog/bloghub.py",
+		"/Users/haithembelhaj/test.json",
+		"/Users/haithembelhaj/Dev/experimental/explodeHtml/files/test.js",
+		"/Users/haithembelhaj/Dev/heroku/models/posts.json",
+		"/Users/haithembelhaj/Dev/heroku/.gitignore",
+		"/Users/haithembelhaj/Dev/heroku/Procfile",
+		"/Users/haithembelhaj/Dev/openshift/ama/.gitignore",
+		"/Users/haithembelhaj/Dev/roadbees/app/Plugin/NewsLetter/Controller/CampaignsController.php",
+		"/Users/haithembelhaj/Dev/roadbees/app/Plugin/NewsLetter/Controller/SubscribersController.php"
+	],
+	"find":
+	{
+		"height": 33.0
+	},
+	"find_in_files":
+	{
+		"height": 95.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"info",
+			"bind",
+			"walk",
+			"docco",
+			"float32Concat",
+			"DATA",
+			"User",
+			"sc",
+			"SC",
+			"user",
+			"User",
+			"user",
+			"User",
+			"user",
+			"User",
+			"user",
+			"User",
+			"pausedAt",
+			"startedAt",
+			"process",
+			"item",
+			"11",
+			"Modernizr",
+			"me",
+			"Overview",
+			"uploadFiles",
+			"absender",
+			"2px",
+			"left",
+			"height",
+			"Order",
+			"Item",
+			"item",
+			"Item",
+			"items",
+			"1",
+			"mainGain",
+			"impulseResponseBuffer",
+			"assetFinishedLoading",
+			"presetList",
+			"assetFinishedLoading",
+			"impulseResponseBuffer",
+			"sampleBuffer",
+			"fileList",
+			"convolver",
+			"context",
+			"hide",
+			"showAlways",
+			"router",
+			"halo",
+			"	",
+			"afterAddTodo",
+			"contact_form_submitted",
+			"contact_form_process",
+			"$form_action",
+			"mail",
+			"mail#",
+			"mail",
+			"mal",
+			"is_email",
+			"log",
+			"getHash",
+			"trigger",
+			"pushState",
+			"getState",
+			"init",
+			"usecors",
+			"options.profile",
+			"click",
+			"cursor",
+			"fetch",
+			"HammingDistance",
+			"FeatureMatching",
+			"filter",
+			"PoseEstimation",
+			"FeatureMatching",
+			"FilterOrientation",
+			"PoseEstimation",
+			"rpp",
+			"right",
+			"zen",
+			"YT_FILENAME_PATTERN ",
+			"call",
+			"line",
+			"delete",
+			"log",
+			"cod",
+			"pm.min_spare",
+			"nginx"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "templates/index.html",
+					"settings":
+					{
+						"buffer_size": 3552,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1509,
+								1509
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 36.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/controller/Deck.coffee",
+					"settings":
+					{
+						"buffer_size": 7219,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3715,
+								3715
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/CoffeeScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1902.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "static/style.css",
+					"settings":
+					{
+						"buffer_size": 5159,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								975,
+								975
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1982.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 35.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 120.0
+	},
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"html",
+				"/Users/haithembelhaj/Dev/experimental/explodeHtml/html2canvas.js"
+			],
+			[
+				"neews",
+				"app/Plugin/NewsLetter/Controller/NewslettersController.php"
+			],
+			[
+				"sty",
+				"/Users/haithembelhaj/Dev/heroku/public/css/style.css"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 278.0,
+	"status_bar_visible": true
+}

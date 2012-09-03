@@ -10,7 +10,7 @@ Track = (function(_super) {
     Track.__super__.constructor.apply(this, arguments);
   }
 
-  Track.configure("Track", "sc", "buffer", "title", "local", "cover", "bpm");
+  Track.configure("Track", "sc", "buffer", "title", "local", "cover", "bpm", "currentTime");
 
   Track.extend(Spine.Model.Local);
 

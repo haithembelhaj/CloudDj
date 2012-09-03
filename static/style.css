@@ -57,6 +57,11 @@ h2{
 	top: 100;
 }
 
+#decks .info{
+	position: absolute;
+	bottom: 11px;
+}
+
 #decks .wave{
 	position: absolute;
 	top: 200px;
@@ -124,6 +129,10 @@ h2{
 
 #decks #deck-b .player{
 	right: 15px;
+}
+
+#decks #deck-b .info{
+	right: 10px;
 }
 
 #decks #deck-b .waveform{

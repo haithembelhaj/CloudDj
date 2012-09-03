@@ -20,7 +20,8 @@ Deck = (function(_super) {
     '.player': 'player',
     '.cover': 'cover',
     '.effect': 'effect',
-    '.waveform': 'waveform'
+    '.waveform': 'waveform',
+    '.info': 'info'
   };
 
   function Deck() {
@@ -28,6 +29,7 @@ Deck = (function(_super) {
     this.updateWave = __bind(this.updateWave, this);
     this.updateCursor = __bind(this.updateCursor, this);
     this.updateNode = __bind(this.updateNode, this);
+    this.updateInfo = __bind(this.updateInfo, this);
     this.unloadTrack = __bind(this.unloadTrack, this);
     this.loadTrack = __bind(this.loadTrack, this);
     var _this = this;
@@ -62,6 +64,7 @@ Deck = (function(_super) {
     var url, _ref, _ref2,
       _this = this;
     this.track = track;
+    this.track.bind('change', this.updateInfo);
     this.track.bind('destroy', this.unloadTrack);
     if ((_ref = this.source) != null) _ref.noteOff(0);
     this.el.addClass('buffering');
@@ -74,7 +77,7 @@ Deck = (function(_super) {
           delete _this.track.data;
           _this.path = _this.track.buffer.duration / 550;
           _this.wavePath = _this.track.buffer.duration / 3000;
-          _this.track.save;
+          _this.track.save();
           return _this.el.removeClass('buffering');
         });
       } else {
@@ -157,6 +160,17 @@ Deck = (function(_super) {
     this.track.save();
     this.updateCursor(e.offsetX);
     return this.updateWave(this.track.pausedAt / this.wavePath);
+  };
+
+  Deck.prototype.updateInfo = function(track) {
+    var ctmin, ctsec, currentTime, dmin, dsec, duration;
+    currentTime = track.currentTime;
+    ctmin = Math.floor(currentTime / 60);
+    ctsec = Math.floor(currentTime - ctmin * 60);
+    duration = track.buffer.duration;
+    dmin = Math.floor(duration / 60);
+    dsec = Math.floor(duration - dmin * 60);
+    return this.info.html("" + ctmin + ":" + ctsec + "/" + dmin + ":" + dsec + "  BPM:" + (track.bpm / 10));
   };
 
   Deck.prototype.updateNode = function(e) {
@@ -284,6 +298,7 @@ Deck = (function(_super) {
   Deck.prototype.updateAnimations = function() {
     this.animation = window.webkitRequestAnimationFrame(this.updateAnimations);
     this.track.currentTime = (Date.now() - this.track.startedAt) / 1000 + this.track.pausedAt;
+    this.track.save();
     this.updateWave(Math.floor(this.track.currentTime / this.wavePath));
     return this.updateCursor(Math.floor(this.track.currentTime / this.path));
   };

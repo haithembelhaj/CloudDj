@@ -1,0 +1,74 @@
+<!DOCTYPE html>  <html> <head>   <title>Searchlist.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="Deck.html">                 Deck.coffee               </a>                                           <a class="source" href="Playlist.html">                 Playlist.coffee               </a>                                           <a class="source" href="Searchlist.html">                 Searchlist.coffee               </a>                                           <a class="source" href="core.html">                 core.coffee               </a>                                           <a class="source" href="audio.html">                 audio.coffee               </a>                                           <a class="source" href="soundcloud.html">                 soundcloud.coffee               </a>                                           <a class="source" href="Track.html">                 Track.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               Searchlist.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Searchlist</span> <span class="k">extends</span> <span class="nx">Spine</span><span class="p">.</span><span class="nx">Controller</span>
+
+  <span class="nv">el: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#search-container&#39;</span><span class="p">)</span>
+
+  <span class="nv">events:</span>
+    <span class="s">&#39;keydown #searchField&#39;</span> <span class="o">:</span> <span class="s">&#39;search&#39;</span>
+    <span class="s">&#39;click #search&#39;</span> <span class="o">:</span> <span class="s">&#39;renderSearch&#39;</span>
+    <span class="s">&#39;click #favs&#39;</span> <span class="o">:</span> <span class="s">&#39;renderFavs&#39;</span>
+    <span class="s">&#39;click #tracks&#39;</span> <span class="o">:</span> <span class="s">&#39;renderTracks&#39;</span>
+
+  <span class="nv">elements:</span>
+    <span class="s">&#39;#searchlist&#39;</span> <span class="o">:</span> <span class="s">&#39;searchlist&#39;</span>
+    <span class="s">&#39;#searchField&#39;</span> <span class="o">:</span> <span class="s">&#39;query&#39;</span>
+
+  <span class="nv">constructor : </span><span class="o">-&gt;</span>
+    <span class="k">super</span>
+    <span class="vi">@tab = </span><span class="s">&#39;sc&#39;</span>
+
+  <span class="nv">search: </span><span class="nf">()-&gt;</span>
+    <span class="nx">@searchlist</span><span class="p">.</span><span class="nx">empty</span><span class="p">()</span>
+    <span class="nv">searchString = </span><span class="nx">@query</span><span class="p">.</span><span class="nx">val</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">@tab</span> <span class="o">is</span> <span class="s">&#39;sc&#39;</span>
+      <span class="nx">SC</span><span class="p">.</span><span class="nx">get</span> <span class="s">&#39;/tracks&#39;</span><span class="p">,</span> <span class="nv">q: </span><span class="nx">searchString</span><span class="p">,</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span><span class="o">=&gt;</span>
+        <span class="k">for</span> <span class="nx">track</span> <span class="k">in</span> <span class="nx">result</span><span class="p">[</span><span class="mi">0</span><span class="p">..</span><span class="mi">10</span><span class="p">]</span>
+          <span class="nx">@renderOne</span> <span class="nx">track</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="nx">@tab</span> <span class="o">is</span> <span class="s">&#39;favs&#39;</span>
+      <span class="k">for</span> <span class="nx">track</span> <span class="k">in</span> <span class="nx">User</span><span class="p">.</span><span class="nx">favs</span>
+        <span class="k">if</span> <span class="nx">track</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">username</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">searchString</span><span class="p">)</span> <span class="o">isnt</span> <span class="o">-</span><span class="mi">1</span> <span class="o">or</span> <span class="nx">track</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">searchString</span><span class="p">)</span> <span class="o">isnt</span> <span class="o">-</span><span class="mi">1</span>
+          <span class="nx">@renderOne</span> <span class="nx">track</span>
+    <span class="k">else</span> 
+      <span class="k">for</span> <span class="nx">track</span> <span class="k">in</span> <span class="nx">User</span><span class="p">.</span><span class="nx">tracks</span>
+        <span class="k">if</span> <span class="nx">track</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">username</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">searchString</span><span class="p">)</span> <span class="o">isnt</span> <span class="o">-</span><span class="mi">1</span> <span class="o">or</span> <span class="nx">track</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">searchString</span><span class="p">)</span> <span class="o">isnt</span> <span class="o">-</span><span class="mi">1</span>
+          <span class="nx">@renderOne</span> <span class="nx">track</span>
+
+  <span class="nv">renderSearch: </span><span class="nf">()-&gt;</span>
+    <span class="nx">@searchlist</span><span class="p">.</span><span class="nx">empty</span><span class="p">()</span>
+    <span class="vi">@tab = </span><span class="s">&#39;sc&#39;</span>
+    <span class="nx">@query</span><span class="p">.</span><span class="nx">attr</span> <span class="s">&#39;placeholder&#39;</span><span class="p">,</span> <span class="s">&#39;search Soundcloud&#39;</span>
+
+  <span class="nv">renderFavs: </span><span class="nf">()-&gt;</span>
+    <span class="nx">@query</span><span class="p">.</span><span class="nx">attr</span> <span class="s">&#39;placeholder&#39;</span><span class="p">,</span> <span class="s">&#39;search your favorites&#39;</span>
+    <span class="vi">@tab = </span><span class="s">&#39;favs&#39;</span>
+    <span class="nx">@searchlist</span><span class="p">.</span><span class="nx">empty</span><span class="p">()</span>
+    <span class="k">for</span> <span class="nx">track</span> <span class="k">in</span> <span class="nx">User</span><span class="p">.</span><span class="nx">favs</span>
+      <span class="nx">@renderOne</span> <span class="nx">track</span>
+
+  <span class="nv">renderTracks: </span><span class="nf">()-&gt;</span>
+    <span class="nx">@query</span><span class="p">.</span><span class="nx">attr</span> <span class="s">&#39;placeholder&#39;</span><span class="p">,</span> <span class="s">&#39;search your tracks&#39;</span>
+    <span class="vi">@tab = </span><span class="s">&#39;tracks&#39;</span>
+    <span class="nx">@searchlist</span><span class="p">.</span><span class="nx">empty</span><span class="p">()</span>
+    <span class="k">for</span> <span class="nx">track</span> <span class="k">in</span> <span class="nx">User</span><span class="p">.</span><span class="nx">tracks</span>
+      <span class="nx">@renderOne</span> <span class="nx">track</span>
+
+  <span class="nv">renderOne: </span><span class="nf">(track)-&gt;</span>
+    <span class="nv">item = </span><span class="k">new</span> <span class="nx">searchItem</span><span class="p">(</span><span class="nv">item : </span><span class="nx">track</span><span class="p">)</span>
+    <span class="nx">@searchlist</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">el</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nx">searchItem</span> <span class="k">extends</span> <span class="nx">Spine</span><span class="p">.</span><span class="nx">Controller</span>
+
+  <span class="nv">tag: </span><span class="s">&#39;li&#39;</span>
+
+  <span class="nv">events:</span>
+    <span class="s">&#39;click .add-list&#39;</span> <span class="o">:</span> <span class="s">&#39;addToList&#39;</span>
+
+  <span class="nv">render: </span><span class="o">-&gt;</span>
+    <span class="nv">title = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">@item</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">username</span><span class="si">}</span><span class="s"> - </span><span class="si">#{</span><span class="nx">@item</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="s">&quot;</span>
+    <span class="nv">src = </span><span class="nx">@item</span><span class="p">.</span><span class="nx">artwork_url</span> <span class="o">or</span> <span class="s">&#39;/static/images/logo.png&#39;</span>
+    <span class="nx">@el</span><span class="p">.</span><span class="nx">html</span> <span class="nx">$</span><span class="p">(</span><span class="s">&#39;#searchItemTemplate&#39;</span><span class="p">).</span><span class="nx">tmpl</span><span class="p">(</span><span class="nv">src: </span><span class="nx">src</span><span class="p">,</span> <span class="nv">title: </span><span class="nx">title</span><span class="p">)</span>
+    <span class="nx">@</span>
+
+  <span class="nv">addToList: </span><span class="o">-&gt;</span>
+    <span class="nv">cover = </span><span class="nx">@item</span><span class="p">.</span><span class="nx">artwork_url</span> <span class="o">or</span> <span class="s">&quot;/static/images/logo.png&quot;</span>
+    <span class="nv">track = </span><span class="nx">Track</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nv">sc : </span><span class="nx">@item</span><span class="p">,</span> <span class="nv">cover : </span><span class="nx">cover</span><span class="p">)</span>
+    <span class="nx">track</span><span class="p">.</span><span class="nx">save</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>playlist.renderOne(sc : @item)</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

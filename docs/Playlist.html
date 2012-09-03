@@ -1,0 +1,78 @@
+<!DOCTYPE html>  <html> <head>   <title>Playlist.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="Deck.html">                 Deck.coffee               </a>                                           <a class="source" href="Playlist.html">                 Playlist.coffee               </a>                                           <a class="source" href="Searchlist.html">                 Searchlist.coffee               </a>                                           <a class="source" href="core.html">                 core.coffee               </a>                                           <a class="source" href="audio.html">                 audio.coffee               </a>                                           <a class="source" href="soundcloud.html">                 soundcloud.coffee               </a>                                           <a class="source" href="Track.html">                 Track.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               Playlist.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>The playlist Logic
+add an remove Items from Playlist</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Playlist</span> <span class="k">extends</span> <span class="nx">Spine</span><span class="p">.</span><span class="nx">Controller</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>The Playlist Controller</p>             </td>             <td class="code">               <div class="highlight"><pre>  
+  <span class="nv">el: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#playlist-container&#39;</span><span class="p">)</span>
+
+  <span class="nv">elements: </span>
+    <span class="s">&#39;#playlist&#39;</span> <span class="o">:</span> <span class="s">&#39;playlist&#39;</span>
+
+  <span class="nv">events: </span>
+    <span class="s">&#39;click #add&#39;</span> <span class="o">:</span> <span class="s">&#39;addSound&#39;</span>
+
+  <span class="nv">constructor: </span><span class="o">-&gt;</span>
+    <span class="k">super</span>
+    <span class="nx">Track</span><span class="p">.</span><span class="nx">bind</span> <span class="s">&#39;create&#39;</span><span class="p">,</span> <span class="nx">@renderOne</span>
+    <span class="nx">Track</span><span class="p">.</span><span class="nx">bind</span> <span class="s">&#39;refresh&#39;</span><span class="p">,</span> <span class="nx">@render</span>
+    <span class="nx">Track</span><span class="p">.</span><span class="nx">fetch</span><span class="p">()</span>
+
+  <span class="nv">render: </span><span class="o">=&gt;</span>
+    <span class="k">for</span> <span class="nx">track</span> <span class="k">in</span> <span class="nx">Track</span><span class="p">.</span><span class="nx">all</span><span class="p">()</span>
+      <span class="k">if</span> <span class="o">not</span> <span class="nx">track</span><span class="p">.</span><span class="nx">local</span>
+        <span class="nv">track.buffer = </span><span class="s">&quot;&quot;</span>
+        <span class="nx">track</span><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+        <span class="nx">@renderOne</span> <span class="nx">track</span>
+
+  <span class="nv">renderOne: </span><span class="p">(</span><span class="nx">track</span><span class="p">)</span><span class="o">=&gt;</span>
+    <span class="nv">item = </span><span class="k">new</span> <span class="nx">Item</span><span class="p">(</span><span class="nv">item : </span><span class="nx">track</span><span class="p">)</span>
+    <span class="nx">@playlist</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">el</span><span class="p">)</span>
+
+  <span class="nv">addSound : </span><span class="nf">()-&gt;</span>
+    <span class="nv">url = </span><span class="nx">@$</span><span class="p">(</span><span class="s">&#39;#url&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+    <span class="nx">$</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;http://api.soundcloud.com/resolve.json?url=</span><span class="si">#{</span><span class="nx">url</span><span class="si">}</span><span class="s">&amp;client_id=</span><span class="si">#{</span><span class="nx">APPID</span><span class="si">}</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span><span class="o">=&gt;</span>
+      <span class="nv">track = </span><span class="nx">Track</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nv">sc : </span><span class="nx">data</span><span class="p">)</span>
+      <span class="nv">track.cover = </span><span class="nx">data</span><span class="p">.</span><span class="nx">sc</span><span class="p">.</span><span class="nx">artwork_url</span> <span class="o">or</span> <span class="s">&quot;/static/images/logo.png&quot;</span>
+      <span class="nx">track</span><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+
+  <span class="nv">loadFile: </span><span class="nf">(e)-&gt;</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">()</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">()</span>
+    <span class="nv">files = </span><span class="nx">e</span><span class="p">.</span><span class="nx">dataTransfer</span><span class="p">.</span><span class="nx">files</span>
+    <span class="nv">tracks = </span><span class="p">[]</span>
+    <span class="nv">reader = </span><span class="k">new</span> <span class="nx">FileReader</span><span class="p">()</span>
+    <span class="nv">reader.onload = </span><span class="nf">(fileEvent)-&gt;</span>
+      <span class="nv">track = </span><span class="nx">tracks</span><span class="p">.</span><span class="nx">shift</span><span class="p">()</span>
+      <span class="nv">track.data = </span><span class="nx">fileEvent</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">result</span>
+      <span class="nx">track</span><span class="p">.</span><span class="nx">save</span>
+
+    <span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="nx">files</span>
+      <span class="k">if</span> <span class="nx">file</span><span class="p">.</span><span class="nx">type</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span> <span class="o">is</span> <span class="s">&quot;audio&quot;</span>
+        <span class="nv">track = </span><span class="nx">Track</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nv">title : </span><span class="nx">file</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">),</span> <span class="nv">local : </span><span class="kc">true</span><span class="p">,</span> <span class="nv">cover: </span><span class="s">&quot;/static/images/logo.png&quot;</span><span class="p">)</span>
+        <span class="nx">tracks</span><span class="p">.</span><span class="nx">push</span> <span class="nx">track</span>
+        <span class="nx">reader</span><span class="p">.</span><span class="nx">readAsArrayBuffer</span> <span class="nx">file</span> 
+
+
+<span class="k">class</span> <span class="nx">Item</span> <span class="k">extends</span> <span class="nx">Spine</span><span class="p">.</span><span class="nx">Controller</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>The Item Controller</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">tag: </span><span class="s">&#39;li&#39;</span>
+
+  <span class="nv">events:</span>
+    <span class="s">&#39;click .load-a&#39;</span> <span class="o">:</span> <span class="s">&#39;loadA&#39;</span>
+    <span class="s">&#39;click .load-b&#39;</span> <span class="o">:</span> <span class="s">&#39;loadB&#39;</span>
+    <span class="s">&#39;click .delete&#39;</span> <span class="o">:</span> <span class="s">&#39;delete&#39;</span>
+
+  <span class="nv">constructor : </span><span class="o">-&gt;</span>
+    <span class="k">super</span>
+
+  <span class="nv">render: </span><span class="o">-&gt;</span>
+    <span class="nv">title = </span><span class="nx">@item</span><span class="p">.</span><span class="nx">title</span> <span class="o">or</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">@item</span><span class="p">.</span><span class="nx">sc</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">username</span><span class="si">}</span><span class="s"> - </span><span class="si">#{</span><span class="nx">@item</span><span class="p">.</span><span class="nx">sc</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="s">&quot;</span>
+    <span class="nx">@el</span><span class="p">.</span><span class="nx">html</span> <span class="nx">$</span><span class="p">(</span><span class="s">&#39;#listItemTemplate&#39;</span><span class="p">).</span><span class="nx">tmpl</span><span class="p">(</span><span class="nv">src: </span><span class="nx">@item</span><span class="p">.</span><span class="nx">cover</span><span class="p">,</span> <span class="nv">title: </span><span class="nx">title</span><span class="p">)</span>
+    <span class="nx">@</span>
+
+  <span class="nv">loadA: </span><span class="o">-&gt;</span>
+    <span class="nx">deckA</span><span class="p">.</span><span class="nx">loadTrack</span><span class="p">(</span><span class="nx">@item</span><span class="p">)</span>
+
+  <span class="nv">loadB: </span><span class="o">-&gt;</span>
+    <span class="nx">deckB</span><span class="p">.</span><span class="nx">loadTrack</span><span class="p">(</span><span class="nx">@item</span><span class="p">)</span>
+
+  <span class="k">delete</span><span class="o">:</span> <span class="o">-&gt;</span>
+    <span class="nx">@item</span><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span>
+    <span class="nx">@release</span><span class="p">()</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

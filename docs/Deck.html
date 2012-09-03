@@ -1,0 +1,227 @@
+<!DOCTYPE html>  <html> <head>   <title>Deck.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="Deck.html">                 Deck.coffee               </a>                                           <a class="source" href="Playlist.html">                 Playlist.coffee               </a>                                           <a class="source" href="Searchlist.html">                 Searchlist.coffee               </a>                                           <a class="source" href="core.html">                 core.coffee               </a>                                           <a class="source" href="audio.html">                 audio.coffee               </a>                                           <a class="source" href="soundcloud.html">                 soundcloud.coffee               </a>                                           <a class="source" href="Track.html">                 Track.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               Deck.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>The Deck Controller 
+Defines All the functionality of a Dj-Deck</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Deck</span> <span class="k">extends</span> <span class="nx">Spine</span><span class="p">.</span><span class="nx">Controller</span>
+
+  <span class="nv">events:</span>
+    <span class="s">&#39;click .cover&#39;</span> <span class="o">:</span> <span class="s">&#39;togglePlay&#39;</span>
+    <span class="s">&#39;change .tempo&#39;</span> <span class="o">:</span> <span class="s">&#39;updateTempo&#39;</span>
+    <span class="s">&#39;click .filters .filter&#39;</span> <span class="o">:</span> <span class="s">&#39;toggleFilter&#39;</span>
+    <span class="s">&#39;change .effect&#39;</span> <span class="o">:</span> <span class="s">&#39;effectVolume&#39;</span>
+    <span class="s">&#39;click .player&#39;</span> <span class="o">:</span> <span class="s">&#39;jumpTo&#39;</span>
+
+  <span class="nv">elements:</span>
+    <span class="s">&#39;.tempo&#39;</span> <span class="o">:</span> <span class="s">&#39;tempoRange&#39;</span>
+    <span class="s">&#39;.player&#39;</span><span class="o">:</span> <span class="s">&#39;player&#39;</span>
+    <span class="s">&#39;.cover&#39;</span> <span class="o">:</span> <span class="s">&#39;cover&#39;</span>
+    <span class="s">&#39;.effect&#39;</span> <span class="o">:</span> <span class="s">&#39;effect&#39;</span>
+    <span class="s">&#39;.waveform&#39;</span> <span class="o">:</span> <span class="s">&#39;waveform&#39;</span>
+
+  <span class="nv">constructor: </span><span class="o">-&gt;</span>
+    <span class="k">super</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Beat detector</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@threshold = </span><span class="mf">0.3</span>
+    <span class="vi">@currentThreshold = </span><span class="mf">0.3</span>
+    <span class="vi">@decay = </span><span class="mf">0.02</span>
+    <span class="vi">@beatdetector = </span><span class="k">new</span> <span class="nx">BeatDetektor</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>nodes</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@gainNode = </span><span class="nx">context</span><span class="p">.</span><span class="nx">createGainNode</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Analyser</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@analyser = </span><span class="nx">context</span><span class="p">.</span><span class="nx">createAnalyser</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>FFT</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@jsNode = </span><span class="nx">context</span><span class="p">.</span><span class="nx">createJavaScriptNode</span> <span class="nx">SAMPLE_SIZE</span><span class="o">/</span><span class="mi">2</span>
+    <span class="vi">@jsNode.onaudioprocess = </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="o">=&gt;</span>
+      <span class="nx">@updateNode</span> <span class="nx">e</span>
+    <span class="vi">@fft = </span><span class="k">new</span> <span class="nx">FFT</span> <span class="nx">SAMPLE_SIZE</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="nx">SAMPLE_RATE</span>
+    <span class="vi">@signal = </span><span class="k">new</span> <span class="nx">Float32Array</span> <span class="nx">SAMPLE_SIZE</span><span class="o">/</span><span class="mi">2</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Convolver</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@convolver = </span><span class="nx">context</span><span class="p">.</span><span class="nx">createConvolver</span><span class="p">()</span>
+    <span class="vi">@convolverGain = </span><span class="nx">context</span><span class="p">.</span><span class="nx">createGainNode</span><span class="p">()</span>
+    <span class="vi">@convolverGain.gain.value = </span><span class="mi">0</span>
+    <span class="vi">@playing = </span><span class="kc">false</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>canvas stuff</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@waveCtx = </span><span class="nx">@waveform</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">getContext</span><span class="p">(</span><span class="s">&#39;2d&#39;</span><span class="p">)</span>
+    <span class="vi">@playerCtx = </span><span class="nx">@player</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">getContext</span><span class="p">(</span><span class="s">&#39;2d&#39;</span><span class="p">)</span>
+    <span class="vi">@spectrumCtx = </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#spectrum&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">getContext</span><span class="p">(</span><span class="s">&#39;2d&#39;</span><span class="p">)</span>
+    <span class="vi">@image = </span><span class="k">new</span> <span class="nx">Image</span><span class="p">()</span>
+    <span class="vi">@image.onload = </span><span class="p">()</span><span class="o">=&gt;</span> 
+      <span class="nx">@drawWave</span> <span class="mi">225</span>
+      <span class="nx">@drawCursor</span> <span class="mi">0</span>
+
+  <span class="nv">loadTrack: </span><span class="p">(</span><span class="nx">track</span><span class="p">)</span><span class="o">=&gt;</span>
+    <span class="vi">@track = </span><span class="nx">track</span>
+    <span class="nx">@track</span><span class="p">.</span><span class="nx">bind</span> <span class="s">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@unloadTrack</span>
+    <span class="nx">@source</span><span class="o">?</span><span class="p">.</span><span class="nx">noteOff</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nx">@el</span><span class="p">.</span><span class="nx">addClass</span> <span class="s">&#39;buffering&#39;</span>
+    <span class="vi">@image.src = </span><span class="nx">@track</span><span class="p">.</span><span class="nx">sc</span><span class="o">?</span><span class="p">.</span><span class="nx">waveform_url</span> <span class="o">or</span> <span class="s">&#39;/static/images/waveform.png&#39;</span>
+    <span class="nx">@cover</span><span class="p">.</span><span class="nx">css</span> <span class="s">&#39;background-image&#39;</span><span class="p">,</span> <span class="s">&quot;url(</span><span class="si">#{</span><span class="nx">@track</span><span class="p">.</span><span class="nx">cover</span><span class="si">}</span><span class="s">)&quot;</span>
+    <span class="k">if</span> <span class="o">not</span> <span class="nx">@track</span><span class="p">.</span><span class="nx">buffer</span>
+      <span class="k">if</span> <span class="nx">@track</span><span class="p">.</span><span class="nx">local</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">decodeAudioData</span> <span class="nx">@track</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="p">(</span><span class="nx">buffer</span><span class="p">)</span><span class="o">=&gt;</span>
+          <span class="vi">@track.buffer = </span><span class="nx">buffer</span>
+          <span class="k">delete</span> <span class="nx">@track</span><span class="p">.</span><span class="nx">data</span>
+          <span class="vi">@path = </span><span class="nx">@track</span><span class="p">.</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">duration</span><span class="o">/</span><span class="mi">550</span>
+          <span class="vi">@wavePath = </span> <span class="nx">@track</span><span class="p">.</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">duration</span><span class="o">/</span><span class="mi">3000</span>
+          <span class="nx">@track</span><span class="p">.</span><span class="nx">save</span>
+          <span class="nx">@el</span><span class="p">.</span><span class="nx">removeClass</span> <span class="s">&#39;buffering&#39;</span>
+      <span class="k">else</span>
+        <span class="nv">url = </span><span class="nx">track</span><span class="p">.</span><span class="nx">sc</span><span class="p">.</span><span class="nx">stream_url</span><span class="o">+</span><span class="s">&quot;?client_id=</span><span class="si">#{</span><span class="nx">APPID</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="nx">getBuffer</span> <span class="s">&#39;/stream?url=&#39;</span><span class="o">+</span><span class="nx">escape</span><span class="p">(</span><span class="nx">url</span><span class="p">),</span>
+          <span class="p">(</span><span class="nx">ev</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">@drawCursor</span> <span class="p">((</span><span class="nx">ev</span><span class="p">.</span><span class="nx">loaded</span><span class="o">/</span><span class="nx">ev</span><span class="p">.</span><span class="nx">total</span><span class="p">)</span><span class="o">*</span><span class="mi">550</span><span class="p">),</span>
+          <span class="p">(</span><span class="nx">buffer</span><span class="p">)</span><span class="o">=&gt;</span>
+            <span class="vi">@track.buffer = </span><span class="nx">buffer</span>
+            <span class="vi">@path = </span><span class="nx">@track</span><span class="p">.</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">duration</span><span class="o">/</span><span class="mi">550</span>
+            <span class="vi">@wavePath = </span> <span class="nx">@track</span><span class="p">.</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">duration</span><span class="o">/</span><span class="mi">3000</span>
+            <span class="nx">@track</span><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+            <span class="nx">@el</span><span class="p">.</span><span class="nx">removeClass</span> <span class="s">&#39;buffering&#39;</span>
+    <span class="k">else</span>
+      <span class="nx">@el</span><span class="p">.</span><span class="nx">removeClass</span> <span class="s">&#39;buffering&#39;</span>
+      <span class="vi">@path = </span><span class="nx">@track</span><span class="p">.</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">duration</span><span class="o">/</span><span class="mi">550</span>
+      <span class="vi">@wavePath = </span> <span class="nx">@track</span><span class="p">.</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">duration</span><span class="o">/</span><span class="mi">3000</span>
+      <span class="nx">@drawCursor</span> <span class="mi">0</span>
+
+  <span class="nv">unloadTrack: </span><span class="p">()</span><span class="o">=&gt;</span>
+    <span class="nx">@pause</span><span class="p">()</span> <span class="k">if</span> <span class="nx">@playing</span>
+    <span class="k">delete</span> <span class="nx">@track</span>
+    <span class="nx">@drawCursor</span> <span class="mi">0</span>
+
+  <span class="nv">togglePlay: </span><span class="nf">()-&gt;</span>
+    <span class="k">if</span> <span class="nx">@playing</span> <span class="k">then</span> <span class="nx">@pause</span><span class="p">()</span> <span class="k">else</span> <span class="nx">@play</span><span class="p">()</span>
+
+  <span class="nv">play: </span><span class="nf">(startAt= @track.pausedAt) -&gt;</span>
+    <span class="k">if</span> <span class="nx">@track</span><span class="o">?</span><span class="p">.</span><span class="nx">buffer</span>
+      <span class="vi">@source = </span><span class="nx">context</span><span class="p">.</span><span class="nx">createBufferSource</span><span class="p">()</span>
+      <span class="vi">@source.buffer = </span><span class="nx">@track</span><span class="p">.</span><span class="nx">buffer</span>
+      <span class="nx">@source</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">@analyser</span>
+      <span class="nx">@analyser</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">@gainNode</span>
+      <span class="nx">@source</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">@jsNode</span>
+      <span class="nx">@jsNode</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">context</span><span class="p">.</span><span class="nx">destination</span>
+      <span class="nx">@source</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">@convolver</span>
+      <span class="nx">@convolverGain</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">@gainNode</span>
+      <span class="nx">@gainNode</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">context</span><span class="p">.</span><span class="nx">destination</span>
+      <span class="vi">@track.startedAt = </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span>
+      <span class="k">if</span> <span class="nx">startAt</span>
+        <span class="vi">@track.pausedAt = </span><span class="nx">startAt</span>
+        <span class="nx">@source</span><span class="p">.</span><span class="nx">noteGrainOn</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">startAt</span><span class="p">,</span> <span class="nx">@source</span><span class="p">.</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">duration</span> <span class="o">-</span> <span class="nx">startAt</span>
+      <span class="k">else</span> 
+        <span class="vi">@track.pausedAt = </span><span class="mi">0</span>
+        <span class="nx">@source</span><span class="p">.</span><span class="nx">noteOn</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+      <span class="vi">@playing = </span><span class="kc">true</span>
+      <span class="nx">@updateTempo</span><span class="p">()</span>
+      <span class="nx">@updateAnimations</span><span class="p">()</span>
+      <span class="nx">@track</span><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+
+  <span class="nv">pause: </span><span class="o">-&gt;</span>
+    <span class="nx">@track</span><span class="p">.</span><span class="nx">pausedAt</span> <span class="o">+=</span> <span class="p">(</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">@track</span><span class="p">.</span><span class="nx">startedAt</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000</span>
+    <span class="nx">@track</span><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+    <span class="nx">@source</span><span class="p">.</span><span class="nx">noteOff</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="vi">@playing = </span><span class="kc">false</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">webkitCancelRequestAnimationFrame</span> <span class="nx">@animation</span>
+
+  <span class="nv">jumpTo: </span><span class="nf">(e)-&gt;</span>
+    <span class="k">if</span> <span class="nx">@playing</span>
+      <span class="nx">@pause</span><span class="p">()</span>
+      <span class="nx">@play</span> <span class="nx">e</span><span class="p">.</span><span class="nx">offsetX</span><span class="o">*</span><span class="nx">@path</span>
+    <span class="k">else</span>
+      <span class="vi">@track.pausedAt = </span><span class="nx">e</span><span class="p">.</span><span class="nx">offsetX</span><span class="o">*</span><span class="nx">@path</span>
+
+    <span class="nx">@track</span><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+    <span class="nx">@updateCursor</span> <span class="nx">e</span><span class="p">.</span><span class="nx">offsetX</span>
+    <span class="nx">@updateWave</span> <span class="nx">@track</span><span class="p">.</span><span class="nx">pausedAt</span><span class="o">/</span><span class="nx">@wavePath</span>
+
+  <span class="nv">updateNode: </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="o">=&gt;</span>
+    <span class="k">if</span> <span class="o">!</span><span class="nx">@playing</span> 
+      <span class="kc">false</span>
+    <span class="k">else</span>
+      <span class="nv">bufferL = </span><span class="nx">e</span><span class="p">.</span><span class="nx">inputBuffer</span><span class="p">.</span><span class="nx">getChannelData</span> <span class="mi">0</span>
+      <span class="nv">bufferR = </span><span class="nx">e</span><span class="p">.</span><span class="nx">inputBuffer</span><span class="p">.</span><span class="nx">getChannelData</span> <span class="mi">1</span> 
+      <span class="vi">@signal = </span><span class="p">((</span><span class="nx">bufferL</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="nx">bufferR</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span> <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">..(</span><span class="nx">SAMPLE_SIZE</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+      <span class="nx">@fft</span><span class="p">.</span><span class="nx">forward</span> <span class="nx">@signal</span>
+      <span class="nx">@updateSpectrum</span><span class="p">()</span>
+      <span class="nx">@bpm</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>@detectBeat()</p>             </td>             <td class="code">               <div class="highlight"><pre>  
+  <span class="nv">bpm: </span><span class="nf">()-&gt;</span>
+    <span class="nx">@beatdetector</span><span class="p">.</span><span class="nx">process</span> <span class="nx">@track</span><span class="p">.</span><span class="nx">getCurrentTime</span><span class="p">(),</span> <span class="nx">@fft</span><span class="p">.</span><span class="nx">spectrum</span>
+    <span class="vi">@track.bpm = </span><span class="nx">@beatdetector</span><span class="p">.</span><span class="nx">win_bpm_int</span>
+    <span class="nx">@track</span><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+
+  <span class="nv">detectBeat: </span><span class="nf">()-&gt;</span>
+    <span class="nv">magnitude = </span><span class="mi">0</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">..</span><span class="mi">10</span><span class="p">]</span>
+      <span class="k">if</span> <span class="nx">@fft</span><span class="p">.</span><span class="nx">spectrum</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nx">magnitude</span> <span class="k">then</span> <span class="nv">magnitude = </span><span class="nx">@fft</span><span class="p">.</span><span class="nx">spectrum</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nx">magnitude</span> <span class="o">&gt;=</span> <span class="nx">@threshold</span> <span class="o">and</span> <span class="nx">magnitude</span> <span class="o">&gt;=</span> <span class="nx">@currentThreshold</span>
+      <span class="vi">@currentThreshold = </span><span class="nx">magnitude</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>BEAT detected</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">@countBeats</span><span class="p">()</span>
+    <span class="k">else</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>DECAY detected</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">@currentThreshold</span> <span class="o">-=</span> <span class="nx">@decay</span>
+
+  <span class="nv">countBeats: </span><span class="nf">()-&gt;</span>
+    <span class="nv">now = </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span>
+    <span class="k">if</span> <span class="o">not</span> <span class="nx">@firstBeat</span>
+      <span class="vi">@firstBeat = </span><span class="nx">now</span>
+      <span class="vi">@beats = </span><span class="mi">1</span>
+    <span class="k">else</span> 
+      <span class="nx">@beats</span><span class="o">++</span>
+
+    <span class="k">if</span> <span class="nx">@beats</span> <span class="o">&gt;</span> <span class="mi">40</span>
+      <span class="vi">@bpm = </span><span class="p">(</span><span class="nx">@beats</span> <span class="o">*</span><span class="mi">60000</span><span class="p">)</span><span class="o">/</span> <span class="p">((</span><span class="nx">now</span> <span class="o">-</span> <span class="nx">@firstBeat</span> <span class="p">)</span><span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="nx">@bpm</span>
+
+  <span class="nv">updateSpectrum: </span><span class="nf">()-&gt;</span>
+    <span class="nx">@spectrumCtx</span><span class="p">.</span><span class="nx">clearRect</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">50</span>
+    <span class="vi">@spectrumCtx.fillStyle = </span><span class="s">&quot;black&quot;</span>
+    <span class="nx">@spectrumCtx</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="nx">@fft</span><span class="p">.</span><span class="nx">spectrum</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="o">*</span><span class="mi">50</span><span class="p">)</span> <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">..</span><span class="mi">256</span><span class="p">]</span>
+
+  <span class="nv">updateCursor: </span><span class="p">(</span><span class="nx">px</span><span class="p">)</span><span class="o">=&gt;</span>
+    <span class="k">if</span> <span class="nx">px</span> <span class="o">&gt;=</span> <span class="mi">550</span>
+      <span class="nb">window</span><span class="p">.</span><span class="nx">webkitCancelRequestAnimationFrame</span> <span class="nx">@animation</span> 
+    <span class="k">else</span>
+      <span class="nx">@drawCursor</span> <span class="nx">px</span>
+
+  <span class="nv">drawCursor: </span><span class="nf">(px)-&gt;</span>
+    <span class="nx">@playerCtx</span><span class="p">.</span><span class="nx">clearRect</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">550</span><span class="p">,</span> <span class="mi">50</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>player</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">playerGradient = </span><span class="nx">@playerCtx</span><span class="p">.</span><span class="nx">createLinearGradient</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">550</span><span class="p">,</span> <span class="mi">50</span>
+    <span class="nx">playerGradient</span><span class="p">.</span><span class="nx">addColorStop</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;</span><span class="err">#</span><span class="s">c586e8&quot;</span>
+    <span class="nx">playerGradient</span><span class="p">.</span><span class="nx">addColorStop</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;</span><span class="err">#</span><span class="s">6343f2&quot;</span>
+    <span class="vi">@playerCtx.fillStyle = </span><span class="nx">playerGradient</span>
+    <span class="nx">@playerCtx</span><span class="p">.</span><span class="nx">fillRect</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">550</span><span class="p">,</span> <span class="mi">50</span>
+    <span class="nx">@playerCtx</span><span class="p">.</span><span class="nx">drawImage</span> <span class="nx">@image</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">550</span><span class="p">,</span> <span class="mi">50</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>cursor</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@playerCtx.fillStyle = </span><span class="s">&quot;rgba(0, 0, 255, 0.2)&quot;</span>
+    <span class="nx">@playerCtx</span><span class="p">.</span><span class="nx">fillRect</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">px</span><span class="p">,</span> <span class="mi">50</span>
+
+  <span class="nv">updateWave: </span><span class="p">(</span><span class="nx">px</span><span class="p">)</span><span class="o">=&gt;</span>
+    <span class="nv">wavePos = </span><span class="mi">225</span><span class="o">-</span><span class="nx">px</span>
+    <span class="k">if</span>  <span class="nx">wavePos</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">2775</span>
+      <span class="nx">@drawWave</span> <span class="nx">wavePos</span> 
+    <span class="k">else</span>
+      <span class="nb">window</span><span class="p">.</span><span class="nx">webkitCancelRequestAnimationFrame</span> <span class="nx">@animation</span>
+
+  <span class="nv">drawWave: </span><span class="nf">(dx)-&gt;</span>
+    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">clearRect</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">450</span><span class="p">,</span> <span class="mi">100</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>wave</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">waveGradient = </span><span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">createLinearGradient</span> <span class="nx">dx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="o">+</span><span class="nx">dx</span><span class="p">,</span> <span class="mi">100</span>
+    <span class="nx">waveGradient</span><span class="p">.</span><span class="nx">addColorStop</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;</span><span class="err">#</span><span class="s">84d1f4&quot;</span>
+    <span class="nx">waveGradient</span><span class="p">.</span><span class="nx">addColorStop</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s">&quot;</span><span class="err">#</span><span class="s">2d74e5&quot;</span>
+    <span class="nx">waveGradient</span><span class="p">.</span><span class="nx">addColorStop</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;</span><span class="err">#</span><span class="s">f24bef&quot;</span>
+    <span class="vi">@waveCtx.fillStyle = </span><span class="nx">waveGradient</span>
+    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">fillRect</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">450</span><span class="p">,</span> <span class="mi">100</span>
+    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">drawImage</span> <span class="nx">@image</span><span class="p">,</span> <span class="nx">dx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">100</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>the ruler</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">beginPath</span><span class="p">()</span>
+    <span class="vi">@waveCtx.lineWidth = </span><span class="mi">1</span>
+    <span class="vi">@waveCtx.strokeStyle = </span><span class="s">&quot;rgba(0, 0, 255, 0.5)&quot;</span>
+    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">moveTo</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">49</span><span class="p">)</span>
+    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">lineTo</span><span class="p">(</span><span class="mi">450</span><span class="p">,</span><span class="mi">49</span><span class="p">)</span>
+    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">stroke</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>the bar</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">beginPath</span><span class="p">()</span>
+    <span class="vi">@waveCtx.lineWidth = </span><span class="mi">2</span>
+    <span class="vi">@waveCtx.strokeStyle = </span><span class="s">&quot;rgba(255, 0, 0, 0.5)&quot;</span>
+    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">moveTo</span><span class="p">(</span><span class="mi">225</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">lineTo</span><span class="p">(</span><span class="mi">225</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+    <span class="nx">@waveCtx</span><span class="p">.</span><span class="nx">stroke</span><span class="p">()</span>
+
+  <span class="nv">updateAnimations: </span><span class="p">()</span><span class="o">=&gt;</span>
+    <span class="vi">@animation = </span><span class="nb">window</span><span class="p">.</span><span class="nx">webkitRequestAnimationFrame</span> <span class="nx">@updateAnimations</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>render</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@track.currentTime = </span><span class="p">(</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">@track</span><span class="p">.</span><span class="nx">startedAt</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span> <span class="o">+</span> <span class="nx">@track</span><span class="p">.</span><span class="nx">pausedAt</span>
+    <span class="nx">@updateWave</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">@track</span><span class="p">.</span><span class="nx">currentTime</span><span class="o">/</span><span class="nx">@wavePath</span><span class="p">)</span>
+    <span class="nx">@updateCursor</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">@track</span><span class="p">.</span><span class="nx">currentTime</span><span class="o">/</span><span class="nx">@path</span><span class="p">)</span>
+
+  <span class="nv">updateTempo: </span><span class="o">-&gt;</span>
+    <span class="vi">@tempo = </span><span class="p">((</span><span class="nx">@tempoRange</span><span class="p">.</span><span class="nx">val</span><span class="p">()</span><span class="o">-</span><span class="mi">50</span><span class="p">)</span><span class="o">/</span><span class="mi">400</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="vi">@source.playbackRate.value = </span><span class="nx">@tempo</span>
+
+
+  <span class="nv">toggleFilter: </span><span class="nf">(e)-&gt;</span>
+    <span class="nv">elem = </span><span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span>
+    <span class="nv">current = </span><span class="nb">parseInt</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s">&#39;filter&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">@lastFilter</span> <span class="o">and</span> <span class="nx">@lastFilter</span> <span class="o">is</span> <span class="nx">current</span>
+      <span class="nx">elem</span><span class="p">.</span><span class="nx">removeClass</span> <span class="s">&#39;active&#39;</span>
+      <span class="nx">@convolver</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+      <span class="vi">@lastFilter = </span><span class="s">&#39;&#39;</span>
+    <span class="k">else</span> 
+      <span class="nx">@convolver</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">@convolverGain</span> <span class="nx">unless</span> <span class="nx">@lastFilter</span>
+      <span class="vi">@lastFilter = </span><span class="nx">current</span>
+      <span class="vi">@convolver.buffer = </span><span class="nx">filterBuffers</span><span class="p">[</span><span class="nx">@lastFilter</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+      <span class="nx">$</span><span class="p">(</span><span class="s">&#39;.filters .filter&#39;</span><span class="p">).</span><span class="nx">removeClass</span> <span class="s">&#39;active&#39;</span>
+      <span class="nx">elem</span><span class="p">.</span><span class="nx">addClass</span> <span class="s">&#39;active&#39;</span>
+
+  <span class="nv">effectVolume: </span><span class="o">-&gt;</span>
+    <span class="vi">@convolverGain.gain.value = </span><span class="nx">@effect</span><span class="p">.</span><span class="nx">val</span><span class="p">()</span><span class="o">/</span><span class="mi">100</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
