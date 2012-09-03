@@ -47,7 +47,8 @@
 	<div id="tabs"><div id="search" class="load">Search</div><div id="favs" class="load">Favorites</div><div id="tracks" class="load">Tracks</div><div style="clear:both; float:none;"></div></div>
 	<p><label>Search  </label><input type="text" id="searchField" name="search" value="" placeholder="search Soundcloud"></p>
 	<ul id="searchlist"></ul>
-</div
+</div>
+
 <!-- Templates -->
 <script type="text/x-jquery-tmpl" id="listItemTemplate">
 	<img class="playlist-thumb" src="${src}"/>
@@ -64,9 +65,16 @@
 
 <!-- Application scripts-->
 <script src="static/fft.js"></script>
+<script src="static/beatdetector.js"></script>
 <script src="static/riffwave.js"></script>
 <script src="static/spine.js"></script>
 <script src="static/local.js"></script>
-<script src="{{ url_for('static', filename='core.js') }}"></script>
+<script src="static/lib/model/Track.js"></script>
+<script src="static/lib/controller/Deck.js"></script>
+<script src="static/lib/controller/Playlist.js"></script>
+<script src="static/lib/controller/Searchlist.js"></script>
+<script src="static/lib/helper/soundcloud.js"></script>
+<script src="static/lib/helper/audio.js"></script>
+<script src="static/lib/core.js"></script>
 </body>
 </html>
